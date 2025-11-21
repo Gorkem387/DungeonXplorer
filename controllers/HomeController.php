@@ -6,9 +6,4 @@ class HomeController
     {
         require 'views/home.php';
     }
-
-    public function testDb()
-    {
-        echo "Connexion OK !";
-    }
 }

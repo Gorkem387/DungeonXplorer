@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteBase /
+
+# Ne pas réécrire les requêtes pour les fichiers existants
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Réécrire toutes les autres requêtes vers index.php
+RewriteRule ^(.*)$ index.php [QSA,L]

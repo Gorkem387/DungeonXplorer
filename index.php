@@ -8,5 +8,5 @@ require 'core/Router.php';
 $router = new Router('');
 
 $router->addRoute('', 'HomeController@index');
-$router->addRoute('test-db', 'HomeController@testDb');
+$router->addRoute('testdb', 'TestController@db');
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));
