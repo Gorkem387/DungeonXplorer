@@ -1,4 +1,4 @@
-<?php require_once '../layouts/header.php'; ?>
+<?php require_once 'views/layouts/header.php'; ?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -16,4 +16,4 @@
 </body>
 </html>
 
-<?php require_once '../layouts/footer.php'; ?>
+<?php require_once 'views/layouts/footer.php'; ?>
