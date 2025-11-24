@@ -15,6 +15,13 @@
     <h1>Mon profil</h1>
 
     <h2>Liste de mes personnages</h2>
+    <div class="perso-card">
+        <img src="public/img/Berserker.jpg" alt="Image du personnage" class="perso-card-img">
+        <div clas="perso-card-contenu">
+            <div class="perso-card-nom">Nom personnage</div>
+            <button class="perso-card-button">Voir détails</div>
+        </div>
+    </div>
 
 </body>
 </html>
