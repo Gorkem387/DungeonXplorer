@@ -30,7 +30,7 @@ class CharacterController
                 $image = '../public/img/Wizard.jpg';
             }
 
-            $rep = $bdd -> query("Select id From class Where name = '" . $name . "';");
+            $rep = $bdd -> query("Select id From Class Where name = '" . $name . "';");
 
             $util = $bdd -> query("Select id From utilisateur Where name = '" . $_SESSION['username'] . "';");
 

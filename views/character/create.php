@@ -24,7 +24,7 @@
             <input type="text" id="desc" name="desc" size="255"><br><br>
 
             <label for="image">Image : </label>
-            <input type="image" id="image" name="image"><br><br>
+            <input type="file" id="image" name="image" accept="image/*"><br><br>
 
             <input type="submit" value="Créer votre héro">
             <br>
