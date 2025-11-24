@@ -23,33 +23,34 @@ class CharacterController
             else{
                 $description = 'Personnage';
             }
-            if (isset($_POST['image'])){
+            if (isset($_FILES['image'])){
                 $image = htmlspecialchars($_POST['image']);
             }
             else{
                 $image = '../public/img/Wizard.jpg';
             }
 
-            $rep = $bdd -> query("Select id From Class Where name = '" . $name . "';");
+            $result_class = $bdd -> query("Select * From Class Where name = '" . $type . "';");
+            $rep = $result_class->fetch(PDO::FETCH_ASSOC);
 
-            $util = $bdd -> query("Select id From utilisateur Where name = '" . $_SESSION['username'] . "';");
-
+            $result_user = $bdd -> query("Select id From utilisateur Where name = '" . $_SESSION['username'] . "';");
+            $util = $result_user->fetch(PDO::FETCH_ASSOC);
 
             $insert = $bdd -> prepare("Insert Into hero (name, class_id, image, biography, pv, mana, strength, initiative, xp, current_level, id_utilisateur) 
-            Values (:name, :class, :image, :bio, :pv, :mana, :strength, :initiative, :xp, :current_level, id_utilisateur);");
-            if ($insert -> execute(array(
+            Values (:name, :class, :image, :bio, :pv, :mana, :strength, :initiative, :xp, :current_level, :id_utilisateur);");
+            if ($insert->execute([
                 'name' => $name,
-                'class' => $_rep[''],
+                'class' => $rep['id'],
                 'image' => $image,
                 'bio' => $description,
-                'pv' => $rep[''],
-                'mana' => $rep[''],
-                'strength' => $rep[''],
-                'initiative' => $rep[''],
-                'xp' => '0',
-                'current_level' => '1',
-                'id_utilisateur' => $util['']
-            ))){
+                'pv' => $rep['pv'],
+                'mana' => $rep['mana'],
+                'strength' => $rep['strength'],
+                'initiative' => $rep['initiative'],
+                'xp' => 0,
+                'current_level' => 1,
+                'id_utilisateur' => $util['id']
+            ])) {
                 header("Location: /profile");
                 exit();
             }                

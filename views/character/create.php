@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../public/css/login.css">
+    <link rel="stylesheet" href="/public/css/login.css">
     <title>Creation de votre hero</title>
 </head>
 <body>
@@ -13,8 +13,8 @@
             <input type="text" id="name" name="name" required><br><br>
 
             <label for="type">Type du hero : </label>
-            <select name="type" id="type">
-            <option value="">--Choisissez un type--</option>
+            <select name="type" id="type" required>
+            <option value="" disabled selected>--Choisissez un type--</option>
             <option value="guerrier">Guerrier</option>
             <option value="magicien">Magicien</option>
             <option value="voleuse">Voleuse</option>
