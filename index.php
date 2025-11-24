@@ -12,5 +12,4 @@ $router->addRoute('testdb', 'TestController@db');
 $router->addRoute('login', 'AuthController@showLogin');
 $router->addRoute('register', 'AuthController@showRegister');
 
-
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));
