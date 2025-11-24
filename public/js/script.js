@@ -1,11 +1,15 @@
 /* Profil Section */
 
-function ouvrirInfo(){
-    document.getElementById('info').classList.add('active');
-    document.body.style.overflow='hidden';
-}
+const btnVoirDetails = document.getElementById('btnVoirDetails');
+const btnFermerInfo = document.getElementById('btnFermerInfo');
+const info = document.getElementById('info');
 
-function fermerInfo(){
-    document.getElementById('info').classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
+btnVoirDetails.addEventListener('click', function() {
+    info.classList.add('active');
+    document.body.style.overflow='hidden';
+});
+
+btnFermerInfo.addEventListener('click', function(event) {
+    info.classList.remove('active');
+    document.body.style.overflow='auto';
+});
