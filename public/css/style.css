@@ -328,3 +328,10 @@ footer i {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-red-hover);
 }
+
+/* Profil Section */
+
+.profil h1 {
+    justify-content: center;
+    text-align: center;
+}

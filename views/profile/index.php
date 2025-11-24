@@ -11,8 +11,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/public/css/style.css">
 </head>
-<body>
-    
+<body class="profil">
+    <h1>Mon profil</h1>
+
+    <h2>Liste de mes personnages</h2>
+
 </body>
 </html>
 
