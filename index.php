@@ -14,5 +14,8 @@ $router->addRoute('register', 'AuthController@showRegister');
 $router->addRoute('profil','ProfileController@index');
 $router->addRoute('register/submit', 'AuthController@handleRegister');
 $router->addRoute('login/submit', 'AuthController@handleLogin');
+$router->addRoute('hero', 'CharacterController@index');
+$router->addRoute('hero/submit', 'CharacterController@handleHero');
+
 
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));
