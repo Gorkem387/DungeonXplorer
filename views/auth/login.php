@@ -1,3 +1,5 @@
+<?php require_once 'views/layouts/header.php'; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +9,7 @@
     <title>Connexion</title>
 </head>
 <body>
+
     <?php if (isset($_SESSION['error'])): ?>
         <div class="error-message">
             <?php 
@@ -29,6 +32,9 @@
             <a href="/">Retournez à l'accueil</a>
         </form>
     </div>
+    
 </body>
 </html>
+
+<?php require_once 'views/layouts/footer.php'; ?>
 
