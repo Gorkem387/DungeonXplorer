@@ -1,18 +1,25 @@
 <?php
-
-class Database
-{
-    private static $pdo;
-    public static function getConnection()
-    {
-        if (!self::$pdo) {
-            self::$pdo = new PDO(
-                "mysql:host=mysql.info.unicaen.fr;dbname=dx13_bd;charset=utf8",
-                "dx13",
-                "iniejohJohghe9ch"
-            );
-            self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+class Database {
+    private static $connection = null;
+    
+    public static function getConnection() {
+        if (self::$connection === null) {
+            $host = 'localhost';
+            $dbname = 'dx13_bd';
+            $username = 'dx13';
+            $password = 'iniejohJohghe9ch'; // Ligne 9 - C'EST ICI LE PROBLÈME
+            
+            try {
+                self::$connection = new PDO(
+                    "mysql:host=$host;dbname=$dbname;charset=utf8",
+                    $username,
+                    $password
+                );
+                self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            } catch (PDOException $e) {
+                die("Erreur de connexion : " . $e->getMessage());
+            }
         }
-        return self::$pdo;
+        return self::$connection;
     }
 }
