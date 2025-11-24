@@ -11,6 +11,7 @@ $router->addRoute('', 'HomeController@index');
 $router->addRoute('testdb', 'TestController@db');
 $router->addRoute('login', 'AuthController@showLogin');
 $router->addRoute('register', 'AuthController@showRegister');
+$router->addRoute('profil','ProfileController@index');
 $router->addRoute('register/submit', 'AuthController@handleRegister');
 $router->addRoute('login/submit', 'AuthController@handleLogin');
 
