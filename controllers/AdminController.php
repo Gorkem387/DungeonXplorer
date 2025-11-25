@@ -1,0 +1,136 @@
+<?php
+
+class AdminController
+{
+    public function index()
+    {
+        require 'views/admin/dashboard.php';
+    }
+
+    public function listeJoueur()
+    {
+        require 'views/admin/joueur/joueur.php';
+    }
+
+    public function deleteJoueur()
+    {
+        session_start();
+        require_once 'models/Database.php';
+        $bdd = Database::getConnection();
+
+
+        $id = htmlspecialchars($_POST['id']); 
+        $delete = 'DELETE FROM utilisateur WHERE id = :id ;';
+        $req = $bdd->prepare($delete);
+        $req->execute(
+            array(
+            'id' => $id
+    )
+        );
+        header("Location: /admin/joueur");
+    }
+
+    public function chapter()
+    {
+        require 'views/admin/chapters/listeChapitre.php';
+    }
+
+    public function chapterAddPage()
+    {
+        require 'views/admin/chapters/ajoutChapitre.php';
+    }
+
+    public function chapterModifyPage()
+    {
+        $id = htmlspecialchars($_POST['id']); 
+        $result_class = $bdd -> query("Select content From Chapter Where id = ':id;");
+        $rep = $result_class->fetch(PDO::FETCH_ASSOC);
+        $_SESSION['id'] = $id;
+        $_SESSION['desc'] = $rep;
+        require 'views/admin/chapters/ajoutChapitre.php';
+    }
+
+    public function chapterDelete()
+    {
+        session_start();
+        require_once 'models/Database.php';
+        $bdd = Database::getConnection();
+
+
+        $id = htmlspecialchars($_POST['id']); 
+
+        $links = 'DELETE FROM links WHERE chapter_id = :id or next_chapter_id = :id;';
+        $req = $bdd->prepare($links);
+        $req->execute(
+            array(
+            'id' => $id
+        )
+        );
+
+
+        $delete = 'DELETE FROM Chapter WHERE id = :id ;';
+        $req = $bdd->prepare($delete);
+        $req->execute(
+            array(
+            'id' => $id
+        )
+        );
+        header("Location: /admin/chapter");    
+    }
+
+    public function chapterModify()
+    {
+        session_start();
+        require_once 'models/Database.php';
+        $bdd = Database::getConnection();
+
+
+        $id = htmlspecialchars($_POST['id']); 
+        $delete = 'update chapter WHERE id = :id ;';
+        $req = $bdd->prepare($delete);
+        $req->execute(
+            array(
+            'id' => $id
+        )
+        );
+        header("Location: /admin/chapter");        
+    }
+
+    public function chapterAdd()
+    {
+        session_start();
+        require_once 'models/Database.php';
+
+        $bdd = Database::getConnection();
+
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $desc = htmlspecialchars($_POST['name']);
+            if (isset($_FILES['image'])){
+                $image = htmlspecialchars($_POST['image']);
+            }
+            else{
+                $image = '../public/img/Castle01.jpg';
+            }
+
+            $insert = $bdd -> prepare("Insert Into Chapter (content, image) 
+            Values (:desc, :image);");
+            if ($insert->execute([
+                'desc' => $desc,
+                'image' => $image,
+            ]));
+            $insert = $bdd -> prepare("Insert Into Links (chapter_id, next_chapter_id) 
+            Values (:curr, :next);");
+            if ($insert->execute([
+                'curr' => $desc,
+                'next' => $image,
+            ]));
+            header("Location: /admin/chapter");    
+        }                
+        else {
+        $_SESSION['error'] = "Erreur lors de l'enregistrement du hero.";
+                header("Location: /hero"); 
+                exit();
+        }
+    }
+}

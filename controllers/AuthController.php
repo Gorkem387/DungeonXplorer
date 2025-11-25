@@ -69,7 +69,7 @@ class AuthController {
             $username = htmlspecialchars($_POST['username']);
             $password = htmlspecialchars($_POST['password']);
 
-            $rep = $bdd -> query("Select mdp From utilisateur Where name = '" . $username . "';");
+            $rep = $bdd -> query("Select mdp, perm_user From utilisateur Where name = '" . $username . "';");
 
             if ($rep->rowCount() > 0) {
                 $data = $rep->fetch();
@@ -77,7 +77,14 @@ class AuthController {
 
                 if (password_verify($password, $hashed_password)) {
                     $_SESSION['username'] = $username;
-                    header("Location: /hero");
+                    $_SESSION['perm'] = $data['perm_user'];
+                    if ($data['perm_user']==1){
+                        header("Location: /admin");
+                    }
+                    else{
+                        header("Location: /hero");
+                    }
+                    
                 } else {
                     $_SESSION['error'] = "Mot de passe incorrect";
                     header("Location: /login"); 
