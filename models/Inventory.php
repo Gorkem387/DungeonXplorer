@@ -2,6 +2,11 @@
 require_once 'models/Database.php';
 require_once 'models/Item.php';
 
+/**
+ * Bien comprendre que Inventory ne stoque pas tout l'inventaire d'un héro.
+ * Il stoque seulement un item et sa quantité.
+ * Des méthodes pour récupérer tout l'inventaire d'un héro sont présentes pour faciliter son utilisation.
+ */
 class Inventory
 {
     private $id;
@@ -47,7 +52,7 @@ class Inventory
     /**
      * Récupère tout l'inventaire d'un héros (un inventaire contient le nombre d'item du même type)
      */
-    public static function getInventories($heroId)
+    public static function getByHeroId($heroId)
     {
         $db = Database::getConnection();
         
@@ -72,7 +77,7 @@ class Inventory
     /**
      * Récupère l'inventaire d'un héros avec les détails des items
      */
-    public static function findByHeroIdWithItems($heroId)
+    public static function getByHeroIdWithItems($heroId)
     {
         $db = Database::getConnection();
         
