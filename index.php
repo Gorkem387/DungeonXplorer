@@ -18,4 +18,8 @@ $router->addRoute('chapter/{id}', 'ChapterController@show');
 $router->addRoute('hero', 'CharacterController@index');
 $router->addRoute('hero/submit', 'CharacterController@handleHero');
 
+$router->addRoute('character/list', 'CharacterController@list');
+
+$router->addRoute('combat/start/{id}', 'CombatController@start');
+
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));
