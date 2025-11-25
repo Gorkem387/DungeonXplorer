@@ -7,7 +7,7 @@ class Database {
             $host = 'localhost';
             $dbname = 'dx13_bd';
             $username = 'dx13';
-            $password = 'iniejohJohghe9ch'; // Ligne 9 - C'EST ICI LE PROBLÈME
+            $password = 'iniejohJohghe9ch';
             
             try {
                 self::$connection = new PDO(
