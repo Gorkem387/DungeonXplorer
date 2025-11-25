@@ -375,26 +375,10 @@ footer i {
     text-align: center;
 }
 
-.perso-card-button {
-    background-color:#C4975E;
-    color: #E5E5E5;
-    border: none;
-    border-radius: 8px;
-    font-size: 20px;
-    width: 150px;
-    height: 40px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    margin-bottom : 30px;
+#btnVoirDetails{
     display : block;
     margin-left: auto;
-    margin-right: auto;
-}
-
-.perso-card-button:hover {
-    background-color:#d49d54;
-    transform: scale(1.1);
+    margin-right: auto;  
 }
 
 /* Détails perso */
@@ -442,7 +426,7 @@ footer i {
 }
 
 .info-perso-fermer:hover {
-    color: #C4975E;
+    color: #8B1E1E;
 }
 
 .info-perso-titre {
@@ -461,9 +445,8 @@ footer i {
 .cadre-info-item {
     margin-bottom: 15px;
     padding: 10px;
-    background: rgba(196, 151, 94, 0.1);
+    background: linear-gradient(135deg, #8B1E1E, #1A1A1A);;
     border-radius: 8px;
-    border-left: 3px solid #C4975E;
 }
 
 .cadre-info-label {
