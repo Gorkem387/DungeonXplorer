@@ -17,5 +17,20 @@ $router->addRoute('login/submit', 'AuthController@handleLogin');
 $router->addRoute('chapter/{id}', 'ChapterController@show');
 $router->addRoute('hero', 'CharacterController@index');
 $router->addRoute('hero/submit', 'CharacterController@handleHero');
+$router->addRoute('admin', 'AdminController@index');
+$router->addRoute('admin/joueur', 'AdminController@listeJoueur');
+$router->addRoute('admin/delete', 'AdminController@deleteJoueur');
+$router->addRoute('admin/chapter', 'AdminController@chapter');
+$router->addRoute('admin/chapter/add', 'AdminController@chapterAddPage');
+$router->addRoute('admin/chapter/delete', 'AdminController@chapterDelete');
+$router->addRoute('admin/chapter/modify', 'AdminController@chapterModifyPage');
+$router->addRoute('admin/chapter/modify/modify', 'AdminController@chapterModify');
+$router->addRoute('admin/chapter/add/add', 'AdminController@chapterAdd');
+
+
+
+
+
+
 
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));
