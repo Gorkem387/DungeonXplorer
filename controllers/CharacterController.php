@@ -36,15 +36,15 @@ class CharacterController
             $result_user = $bdd -> query("Select id From utilisateur Where name = '" . $_SESSION['username'] . "';");
             $util = $result_user->fetch(PDO::FETCH_ASSOC);
 
-            $insert = $bdd -> prepare("Insert Into hero (name, class_id, image, biography, pv, mana, strength, initiative, xp, current_level, id_utilisateur) 
+            $insert = $bdd -> prepare("Insert Into Hero (name, class_id, image, biography, pv, mana, strength, initiative, xp, current_level, id_utilisateur) 
             Values (:name, :class, :image, :bio, :pv, :mana, :strength, :initiative, :xp, :current_level, :id_utilisateur);");
             if ($insert->execute([
                 'name' => $name,
                 'class' => $rep['id'],
                 'image' => $image,
                 'bio' => $description,
-                'pv' => $rep['pv'],
-                'mana' => $rep['mana'],
+                'pv' => $rep['base_pv'],
+                'mana' => $rep['base_mana'],
                 'strength' => $rep['strength'],
                 'initiative' => $rep['initiative'],
                 'xp' => 0,
