@@ -1,3 +1,5 @@
+<?php require_once 'views/layouts/header.php'; ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,7 +15,7 @@
         <?php if ($chapter->getImage()): ?>
             <img src="/public/img/<?php echo htmlspecialchars($chapter->getImage()); ?>" 
                  alt="Chapitre <?php echo htmlspecialchars($chapter->getId()); ?>" 
-                 style="max-width: 100%; height: auto;">
+                 >
         <?php endif; ?>
         
         <div class="content">
@@ -38,3 +40,5 @@
     </div>
 </body>
 </html>
+
+<?php require_once 'views/layouts/footer.php'; ?>

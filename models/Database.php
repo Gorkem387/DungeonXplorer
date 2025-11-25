@@ -7,8 +7,7 @@ class Database {
             $host = 'localhost';
             $dbname = 'dx13_bd';
             $username = 'dx13';
-            $password = 'iniejohJohghe9ch'; 
-            
+            $password = 'iniejohJohghe9ch';
             try {
                 self::$connection = new PDO(
                     "mysql:host=$host;dbname=$dbname;charset=utf8",

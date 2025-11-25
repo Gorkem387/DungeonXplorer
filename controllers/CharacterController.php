@@ -27,7 +27,7 @@ class CharacterController
                 $image = htmlspecialchars($_POST['image']);
             }
             else{
-                $image = '../public/img/Wizard.jpg';
+                $image = '../public/img/guerrier.jpg';
             }
 
             $result_class = $bdd -> query("Select * From Class Where name = '" . $type . "';");
