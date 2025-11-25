@@ -29,7 +29,6 @@
             <input type="submit" value="Se connecter">
             <br>
             <a href="/register">Pas de compte ? Inscrivez-vous ici.</a>
-            <a href="/">Retournez à l'accueil</a>
         </form>
     </div>
     

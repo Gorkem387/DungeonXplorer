@@ -31,7 +31,6 @@
             <input type="submit" value="S'inscrire">
             <br>
             <a href="/login">Déjà un compte ? Connectez-vous ici.</a>
-            <a href="/">Retournez à l'accueil</a>
         </form>
     </div>
 </body>
