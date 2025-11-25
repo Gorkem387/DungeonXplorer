@@ -16,51 +16,23 @@
     <h1>Mon profil</h1>
 
     <h2>Liste de mes personnages</h2>
+
+    <?php foreach ($personnages as $personnage): ?>
     <div class="perso-card">
-        <img src="public/img/Berserker.jpg" alt="Image du personnage" class="perso-card-img">
+        <img src=src="/public/img/<?= htmlspecialchars($personnage['image']) ?>" alt="Image du personnage" class="perso-card-img">
         <div class="perso-card-contenu">
-            <div class="perso-card-nom">Nom personnage</div>
-            <button id="btnVoirDetails" class="perso-card-button">Voir détails</button>
+            <div class="perso-card-nom"><?= htmlspecialchars($personnage['name']) ?></div>
+            <button id="btnVoirDetails" class="btn-custom" onclick="openInfo(<?= $personnage['id'] ?>)"Voir détails</button>
         </div>
     </div>
+    <?php endforeach; ?>
 
     <div id="info" class="info-perso">
         <div class="info-perso-contenu">
             <button id="btnFermerInfo" class="info-perso-fermer">&times;</button>
             <h3 class="info-perso-titre">Détails du personnage</h3>
                 <div class="cadre-info">
-                    <div class="cadre-info-item">
-                        <span class="cadre-info-label">Nom :</span>
-                        ...
-                    </div>
-                    <div class="cadre-info-item">
-                        <span class="cadre-info-label">Classe :</span>
-                        ...
-                    </div>
-                    <div class="cadre-info-item">
-                        <span class="cadre-info-label">Progression :</span>
-                        Chapitre ...
-                    </div>
-                    <div class="cadre-info-item">
-                        <span class="cadre-info-label">Nombre de PV :</span>
-                        ...
-                    </div>
-                    <div class="cadre-info-item">
-                        <span class="cadre-info-label">Initiative :</span>
-                        ...
-                    </div>
-                    <div class="cadre-info-item">
-                        <span class="cadre-info-label">Force :</span>
-                        ...
-                    </div>
-                    <div class="cadre-info-item">
-                        <span class="cadre-info-label">Mana :</span>
-                        ...
-                    </div>
-                    <div class="cadre-info-item">
-                        <span class="cadre-info-label">Equipements :</span>
-                        ...
-                    </div>
+                    
                 </div>
         </div>
     </div>

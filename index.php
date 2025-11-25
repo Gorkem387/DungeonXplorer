@@ -33,4 +33,8 @@ $router->addRoute('admin/chapter/add/add', 'AdminController@chapterAdd');
 
 
 
+$router->addRoute('character/list', 'CharacterController@list');
+
+$router->addRoute('combat/start/{id}', 'CombatController@start');
+
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));

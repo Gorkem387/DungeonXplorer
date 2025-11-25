@@ -13,7 +13,6 @@ class CharacterController
 
         $bdd = Database::getConnection();
 
-
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $name = htmlspecialchars($_POST['name']);
             $type = htmlspecialchars($_POST['type']);
@@ -61,4 +60,14 @@ class CharacterController
                 }
         }
     }
+
+    public function list()
+    {
+        require_once 'models/Hero.php';
+        $heroModel = new Hero();
+        $heroes = $heroModel->findAll();
+
+        require 'views/character/list.php';
+    }
+
 }
