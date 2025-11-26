@@ -19,10 +19,10 @@
 
     <?php foreach ($personnages as $personnage): ?>
     <div class="perso-card">
-        <img src=src="/public/img/<?= htmlspecialchars($personnage['image']) ?>" alt="Image du personnage" class="perso-card-img">
+        <img src="/public/img/<?= htmlspecialchars($personnage['image']) ?>" alt="Image du personnage" class="perso-card-img">
         <div class="perso-card-contenu">
             <div class="perso-card-nom"><?= htmlspecialchars($personnage['name']) ?></div>
-            <button id="btnVoirDetails" class="btn-custom" onclick="openInfo(<?= $personnage['id'] ?>)"Voir détails</button>
+            <button id="btnVoirDetails" class="btn-custom" onclick="openInfo(<?= $personnage['id'] ?>)">Voir détails</button>
         </div>
     </div>
     <?php endforeach; ?>
