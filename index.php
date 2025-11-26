@@ -26,15 +26,13 @@ $router->addRoute('admin/chapter/delete', 'AdminController@chapterDelete');
 $router->addRoute('admin/chapter/modify', 'AdminController@chapterModifyPage');
 $router->addRoute('admin/chapter/modify/modify', 'AdminController@chapterModify');
 $router->addRoute('admin/chapter/add/add', 'AdminController@chapterAdd');
-
-
-
-
-
-
-
 $router->addRoute('character/list', 'CharacterController@list');
-
+//combat
 $router->addRoute('combat/start/{id}', 'CombatController@start');
+$router->addRoute('combat/fight', 'CombatController@fight');
+$router->addRoute('combat/attack', 'CombatController@attack');
+$router->addRoute('combat/magic', 'CombatController@magic');
+$router->addRoute('combat/defend', 'CombatController@defend');
+$router->addRoute('combat/end', 'CombatController@end');
 
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));

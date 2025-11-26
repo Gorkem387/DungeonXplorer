@@ -13,6 +13,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="icon" type="image/x-icon" href="public/img/Logo.png">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg">
