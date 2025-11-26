@@ -4,14 +4,17 @@ class ProfileController
 {
     public function index()
     {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         require_once 'models/Database.php';
         $bdd = Database::getConnection();
 
-        if (!isset($_SESSION['user_id'])) {
+        /*if (!isset($_SESSION['user_id'])) {
             header("Location: /login");
             exit();
-        }
+        }*/
 
         $personnages = $this->getHeroesByUserId($_SESSION['user_id']);
 
@@ -21,15 +24,17 @@ class ProfileController
     private function getHeroesByUserId($userId)
     {
         $bdd = Database::getConnection();
-        $stmt = $this->$bdd->prepare("
+        $stmt = $bdd->prepare("
             SELECT h.*, c.name as class_name, c.image as class_image
             FROM Hero h
             LEFT JOIN Class c ON h.class_id = c.id
             WHERE h.id_utilisateur = :user_id
-            ORDER BY h.created_at DESC
+            ORDER BY h.id DESC
         ");
         $stmt->execute(['user_id' => $userId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $result;
     }
 
     public function getCharacterDetails()

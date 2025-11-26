@@ -35,7 +35,7 @@ class CombatController
             'hero' => $hero,
             'monster' => $monster,
             'log' => [
-                "⚔️ Le combat commence !",
+                "Le combat commence !",
                 "{$hero['name']} (PV: {$hero['pv']}) VS {$monster['name']} (PV: {$monster['pv']})"
             ],
             'turn' => 1,
@@ -84,7 +84,7 @@ class CombatController
         
         $attaque = rand(1, 6) + $hero['strength'];
         $defense = rand(1, 6) + (int)($monster['strength'] / 2);
-        $degats = max(0, $attaque - $defense);
+        $degats = $hero['strength'];
         
         $monster['pv'] -= $degats;
         $monster['pv'] = max(0, $monster['pv']);
@@ -134,13 +134,13 @@ class CombatController
         $hero['mana'] -= $coutSort;
         $attaqueMagique = (rand(1, 6) + rand(1, 6)) + $coutSort;
         $defense = rand(1, 6) + (int)($monster['strength'] / 2);
-        $degats = max(0, $attaqueMagique - $defense);
+        $degats = $hero['strength'];
         
         $monster['pv'] -= $degats;
         $monster['pv'] = max(0, $monster['pv']);
         
-        $combat['log'][] = "🔮 {$hero['name']} lance un sort et inflige {$degats} dégâts magiques !";
-        $combat['log'][] = "💧 Mana restant : {$hero['mana']}";
+        $combat['log'][] = "{$hero['name']} lance un sort et inflige {$degats} dégâts magiques !";
+        $combat['log'][] = "Mana restant : {$hero['mana']}";
         
         $combat['hero'] = $hero;
         $combat['monster'] = $monster;
@@ -170,15 +170,15 @@ class CombatController
             $defense += 5;
         }
         
-        $degats = max(0, $attaque - $defense);
+        $degats = $monster['strength'];
         
         $hero['pv'] -= $degats;
         $hero['pv'] = max(0, $hero['pv']);
         
         if ($degats > 0) {
-            $combat['log'][] = "👹 {$monster['name']} attaque et inflige {$degats} dégâts à {$hero['name']} !";
+            $combat['log'][] = "{$monster['name']} attaque et inflige {$degats} dégâts à {$hero['name']} !";
         } else {
-            $combat['log'][] = "🛡️ {$hero['name']} bloque l'attaque de {$monster['name']} !";
+            $combat['log'][] = "{$hero['name']} bloque l'attaque de {$monster['name']} !";
         }
         
         $combat['hero'] = $hero;

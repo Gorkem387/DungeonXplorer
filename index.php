@@ -35,4 +35,6 @@ $router->addRoute('combat/magic', 'CombatController@magic');
 $router->addRoute('combat/defend', 'CombatController@defend');
 $router->addRoute('combat/end', 'CombatController@end');
 
+
+
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));
