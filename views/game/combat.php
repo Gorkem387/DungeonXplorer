@@ -5,7 +5,7 @@
 <div class="combat-arena">
     <div class="container-fluid">
         
-        <h1 class="combat-title">Combat - Tour <?= $combat['turn'] ?> ⚔️</h1>
+        <h1 class="combat-title">Combat<?= $combat['turn'] ?></h1>
         
         <div class="combat-layout">
             
@@ -14,10 +14,6 @@
                     <div class="combatant-header">
                         <h2><?= htmlspecialchars($hero['name']) ?></h2>
                         <span class="class-badge"><?= htmlspecialchars($hero['class_name'] ?? 'Guerrier') ?></span>
-                    </div>
-                    
-                    <div class="combatant-image">
-                        <img src="<?= htmlspecialchars($hero['image'] ?? '/public/img/classes/default.png') ?>" alt="Héros">
                     </div>
                     
                     <div class="stats-bars">
@@ -42,16 +38,21 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="stat-info-grid">
+                    </div>
+
+                    <div class="combatant-image">
+                        <img src="<?= htmlspecialchars($hero['image'] ?? '/public/img/classes/default.png') ?>" alt="Héros">
+                    </div>
+
+                    <div class="stat-info-grid">
                             <div class="stat-info">
                                 <i class="fa-solid fa-dumbbell"></i> Force: <strong><?= $hero['strength'] ?></strong>
                             </div>
                             <div class="stat-info">
                                 <i class="fa-solid fa-bolt"></i> Initiative: <strong><?= $hero['initiative'] ?></strong>
                             </div>
-                        </div>
                     </div>
+                    
                 </div>
             </div>
             
@@ -105,10 +106,6 @@
                         <span class="level-badge">Niveau <?= $monster['name'] ?></span>
                     </div>
                     
-                    <div class="combatant-image">
-                        <img src="/public/img/Evil warrior.jpg" alt="Monstre">
-                    </div>
-                    
                     <div class="stats-bars">
                         <div class="stat-bar">
                             <div class="stat-label">
@@ -120,6 +117,12 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="combatant-image">
+                        <img src="/public/img/Evil warrior.jpg" alt="Monstre">
+                    </div>
+                    
                         
                         <div class="stat-info-grid">
                             <div class="stat-info">
@@ -133,7 +136,6 @@
                         <div class="xp-reward">
                             <i class="fa-solid fa-star"></i> Récompense: <strong><?= $monster['xp'] ?> XP</strong>
                         </div>
-                    </div>
                 </div>
             </div>
             
