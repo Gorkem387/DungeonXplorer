@@ -1,3 +1,14 @@
+<?php 
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (isset($_SESSION['username'])){
+            require_once 'views/layouts/headerConnecter.php';
+        }
+else{
+    require_once 'views/layouts/header.php';
+} 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +28,7 @@
             <option value="" disabled selected>--Choisissez un type--</option>
             <option value="guerrier">Guerrier</option>
             <option value="magicien">Magicien</option>
-            <option value="voleuse">Voleuse</option>
+            <option value="voleur">Voleur</option>
             </select>
 
             <label for="desc">Description : </label>

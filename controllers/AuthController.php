@@ -9,6 +9,10 @@ class AuthController {
         session_start();
         require 'views/auth/register.php';
     }
+
+    public function showLogout() {
+        require 'views/auth/logout.php';
+    }
     
     public function handleRegister() {
         session_start();

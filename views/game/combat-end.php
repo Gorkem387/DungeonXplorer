@@ -1,4 +1,13 @@
-<?php require_once 'views/layouts/header.php'; ?>
+<?php 
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (isset($_SESSION['username'])){
+        require_once 'views/layouts/headerConnecter.php';
+        }
+    else{
+        require_once 'views/layouts/header.php';
+    } ?>
 
 <link rel="stylesheet" href="/public/css/combat.css">
 
