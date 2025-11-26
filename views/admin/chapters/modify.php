@@ -9,9 +9,12 @@
 <body>
     <div class="form-container">
         <form action="/admin/chapter/modify/modify" method="post">
-            <p><?php echo $_SESSION['id_chapter']?></p>
-            <label for="desc">Description : </label>
-            <input type="text" id="desc" name="desc" size="255" placeholder="<?php echo $_SESSION['description']?>"><br><br>
+            <p><?php echo "Modification du chapitre " .$_SESSION['id']?></p>
+            <br><br>
+            <p>Description actuelle : <?php echo $_SESSION['desc']?></p>
+            <br><br>
+            <label for="desc">Nouvelle Description : </label>
+            <input type="text" id="desc" name="desc" size="255" placeholder="<?php echo $_SESSION['desc']?>"><br><br>
 
             <label for="image">Changer Image : </label>
             <input type="file" id="image" name="image" accept="image/*"><br><br>

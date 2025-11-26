@@ -27,6 +27,22 @@ class AuthController {
             $existingUser = $stmt->fetchColumn();
             
             if ($existingUser == 0) {
+                if (strlen($password) < 8 ){
+                    $_SESSION['error'] = "Le mot de passe doit faire au moins 8 caractères.";
+                    header("Location: /register"); 
+                    exit();
+                }
+                $boolean = 0;
+                for ($i = 0; $i < strlen($password); $i = $i + 1){
+                    if ($password[$i] <= 10 && $password[$i] >=  0){
+                        $boolean = 1;
+                    }
+                }
+                if ($boolean == false){
+                    $_SESSION['error'] = "Le mot de passe doit contenir au moins un chiffre";
+                    header("Location: /register"); 
+                    exit();
+                }
                 if ($password != $password2) {
                     $_SESSION['error'] = "Les mots de passe ne correspondent pas.";
                     header("Location: /register"); 
