@@ -17,7 +17,7 @@
                         PV: <?= $hero['pv'] ?> – Force: <?= $hero['strength'] ?> – XP: <?= $hero['xp'] ?>
                     </div>
                     <div>
-                        <a href="/combat/start?hero_id=<?= $hero['id'] ?>" class="btn btn-success btn-sm">
+                        <a href="/combat/start/<?= $hero['id'] ?>" class="btn btn-success btn-sm">
                             Choisir
                         </a>
                     </div>

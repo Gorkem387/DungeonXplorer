@@ -1,8 +1,4 @@
-/* ============================================
-   CHARACTER CREATION - STYLESHEET
-   ============================================ */
-
-/* Variables réutilisées depuis style.css */
+/* Palette couleurs */
 :root {
     --bg-dark: #0a0a0a;
     --bg-darker: #1a1a1a;
@@ -40,9 +36,7 @@
     padding: 0 2rem;
 }
 
-/* ============================================
-   PARTIE GAUCHE : PREVIEW
-   ============================================ */
+/* PARTIE GAUCHE */
 .preview-section {
     position: sticky;
     top: 100px;
@@ -138,9 +132,7 @@
     color: var(--text-light);
 }
 
-/* ============================================
-   PARTIE DROITE : FORMULAIRE
-   ============================================ */
+/* PARTIE DROITE : FORMULAIRE */
 .form-section {
     background-color: var(--bg-card);
     border: 1px solid var(--border-gray);
@@ -196,9 +188,7 @@
     font-style: italic;
 }
 
-/* ============================================
-   SÉLECTION DES CLASSES
-   ============================================ */
+/* SÉLECTION DES CLASSES */
 .classes-list {
     display: flex;
     flex-direction: column;
@@ -274,9 +264,7 @@
     margin: 0;
 }
 
-/* ============================================
-   BOUTON DE SOUMISSION
-   ============================================ */
+/* BOUTON DE SOUMISSION */
 .form-actions {
     text-align: center;
     margin-top: 3rem;
@@ -309,9 +297,8 @@
     margin-right: 0.8rem;
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+/* RESPONSIVE */
+
 @media (max-width: 1200px) {
     .creation-container {
         grid-template-columns: 1fr;

@@ -1,0 +1,413 @@
+:root {
+    --bg-dark: #0a0a0a;
+    --bg-darker: #1a1a1a;
+    --bg-card: #1f1f1f;
+    --text-light: #e0e0e0;
+    --text-gray: #9a9a9a;
+    --accent-red: #c41e1e;
+    --accent-green: #4a7a66;
+    --border-gray: #333333;
+    --hp-color: #c41e1e;
+    --mana-color: #3b82f6;
+}
+
+/* combat arene */
+.combat-arena {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, var(--bg-darker), var(--bg-dark));
+    padding: 2rem 0;
+}
+
+.combat-title {
+    text-align: center;
+    color: var(--accent-red);
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 20px rgba(196, 30, 30, 0.8);
+    font-family: 'Pirata One', cursive;
+}
+
+.combat-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* combatants */
+.combatant {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+.combatant-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.combatant-header h2 {
+    font-size: 1.8rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    font-family: 'Pirata One', cursive;
+}
+
+.class-badge,
+.level-badge {
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    background-color: var(--bg-darker);
+    border: 1px solid var(--accent-green);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--accent-green);
+}
+
+.monster-header .level-badge {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+.combatant-image {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.combatant-image img {
+    max-width: 100%;
+    height: auto;
+    max-height: 250px;
+    border-radius: 10px;
+    border: 2px solid var(--border-gray);
+}
+
+/* stats bar */
+.stats-bars {
+    margin-top: 1.5rem;
+}
+
+.stat-bar {
+    margin-bottom: 1rem;
+}
+
+.stat-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-light);
+    font-weight: bold;
+}
+
+.stat-label i {
+    color: var(--accent-red);
+}
+
+.progress {
+    background-color: var(--bg-darker);
+    border-radius: 10px;
+    height: 30px;
+    overflow: hidden;
+    border: 1px solid var(--border-gray);
+}
+
+.progress-bar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    transition: width 0.5s ease;
+}
+
+.hp-bar {
+    background: linear-gradient(90deg, var(--hp-color), #e02424);
+}
+
+.hp-bar.enemy {
+    background: linear-gradient(90deg, #8b1515, var(--hp-color));
+}
+
+.mana-bar {
+    background: linear-gradient(90deg, var(--mana-color), #60a5fa);
+}
+
+.stat-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.stat-info {
+    background-color: var(--bg-darker);
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-gray);
+    color: var(--text-gray);
+}
+
+.stat-info i {
+    color: var(--accent-red);
+}
+
+.xp-reward {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--bg-darker), var(--bg-card));
+    border: 2px solid var(--accent-red);
+    border-radius: 8px;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.xp-reward i {
+    color: gold;
+}
+
+/* Combat Log + Actions */
+
+.combat-center {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.combat-log {
+    background-color: var(--bg-card);
+    border: 2px solid var(--border-gray);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.combat-log h3 {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    font-family: 'Pirata One', cursive;
+}
+
+.log-content {
+    background-color: var(--bg-darker);
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.log-content p {
+    color: var(--text-light);
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border-left: 3px solid var(--accent-red);
+    background-color: rgba(196, 30, 30, 0.1);
+}
+
+/* combat actions */
+
+.combat-actions h3 {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    font-family: 'Pirata One', cursive;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.action-btn {
+    background-color: var(--bg-darker);
+    border: 2px solid var(--border-gray);
+    border-radius: 10px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.action-btn:hover:not(:disabled) {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(196, 30, 30, 0.4);
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.attack-btn {
+    border-color: var(--hp-color);
+}
+
+.attack-btn:hover:not(:disabled) {
+    border-color: var(--accent-red);
+    background-color: rgba(196, 30, 30, 0.2);
+}
+
+.magic-btn {
+    border-color: var(--mana-color);
+}
+
+.magic-btn:hover:not(:disabled) {
+    border-color: #60a5fa;
+    background-color: rgba(59, 130, 246, 0.2);
+}
+
+.action-btn i {
+    font-size: 2.5rem;
+    color: var(--accent-red);
+}
+
+.magic-btn i {
+    color: var(--mana-color);
+}
+
+.action-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-light);
+}
+
+.action-desc {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+}
+
+/* combat end screen */
+.combat-end-screen {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, var(--bg-darker), var(--bg-dark));
+    padding: 3rem 0;
+    display: flex;
+    align-items: center;
+}
+
+.result-card {
+    padding: 3rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.result-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.victory .result-icon {
+    color: gold;
+}
+
+.defeat .result-icon {
+    color: var(--accent-red);
+}
+
+.result-title {
+    font-size: 3rem;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    font-family: 'Pirata One', cursive;
+}
+
+.result-text {
+    font-size: 1.3rem;
+    color: var(--text-gray);
+}
+
+.rewards {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: var(--bg-darker);
+    border-radius: 10px;
+    border: 2px solid var(--accent-green);
+}
+
+.rewards h3 {
+    color: var(--accent-green);
+    margin-bottom: 1rem;
+}
+
+.reward-item {
+    font-size: 1.5rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.reward-item i {
+    color: gold;
+}
+
+.combat-summary {
+    background-color: var(--bg-card);
+    border: 2px solid var(--border-gray);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.combat-summary h3 {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+}
+
+.summary-log {
+    background-color: var(--bg-darker);
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.summary-log p {
+    color: var(--text-gray);
+    margin: 0.5rem 0;
+}
+
+.combat-actions-end {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* responsive */
+
+@media (max-width: 1200px) {
+    .combat-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .combatant {
+        position: static;
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .combat-title {
+        font-size: 2rem;
+    }
+    
+    .result-title {
+        font-size: 2rem;
+    }
+    
+    .combat-actions-end {
+        flex-direction: column;
+    }
+}
