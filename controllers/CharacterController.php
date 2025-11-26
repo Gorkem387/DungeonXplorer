@@ -50,7 +50,7 @@ class CharacterController
                 'current_level' => 1,
                 'id_utilisateur' => $util['id']
             ])) {
-                header("Location: /profile");
+                header("Location: /profil");
                 exit();
             }                
             else {
