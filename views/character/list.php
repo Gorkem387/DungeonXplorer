@@ -1,7 +1,5 @@
-<?php require_once 'views/layouts/header.php'; ?>
-
 <div class="container mt-5">
-    <h1 class="text-center mb-4">📜 Liste de vos héros</h1>
+    <h1 class="text-center mb-4">Liste de vos héros</h1>
 
     <?php if (empty($heroes)): ?>
         <p class="text-center">Aucun héros trouvé pour le moment.</p>
@@ -30,5 +28,3 @@
         </div>
     <?php endif; ?>
 </div>
-
-<?php require_once 'views/layouts/footer.php'; ?>

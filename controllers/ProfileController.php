@@ -21,7 +21,7 @@ class ProfileController
     private function getHeroesByUserId($userId)
     {
         $bdd = Database::getConnection();
-        $stmt = $this->$bdd->prepare("
+        $stmt = $bdd->prepare("
             SELECT h.*, c.name as class_name, c.image as class_image
             FROM Hero h
             LEFT JOIN Class c ON h.class_id = c.id

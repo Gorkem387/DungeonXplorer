@@ -11,7 +11,7 @@
     --mana-color: #3b82f6;
 }
 
-/* combat arene */
+/* combat arena */
 .combat-arena {
     min-height: 100vh;
     background: linear-gradient(to bottom, var(--bg-darker), var(--bg-dark));
@@ -36,10 +36,15 @@
 }
 
 /* combatants */
+
 .combatant {
     position: sticky;
     top: 100px;
     height: fit-content;
+}
+
+.combatant-card {
+    padding: 1.5rem;
 }
 
 .combatant-header {
@@ -83,7 +88,8 @@
     border: 2px solid var(--border-gray);
 }
 
-/* stats bar */
+/* stat bars */
+
 .stats-bars {
     margin-top: 1.5rem;
 }
@@ -169,8 +175,7 @@
     color: gold;
 }
 
-/* Combat Log + Actions */
-
+/* combat center */
 .combat-center {
     display: flex;
     flex-direction: column;
@@ -208,6 +213,9 @@
 }
 
 /* combat actions */
+.combat-actions {
+    padding: 1.5rem;
+}
 
 .combat-actions h3 {
     color: var(--text-light);
@@ -230,7 +238,7 @@
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    align-items: left;
+    align-items: center;
     gap: 0.5rem;
     text-align: center;
 }
@@ -263,6 +271,15 @@
     background-color: rgba(59, 130, 246, 0.2);
 }
 
+.defend-btn {
+    border-color: var(--accent-green);
+}
+
+.defend-btn:hover:not(:disabled) {
+    border-color: #5a9a76;
+    background-color: rgba(74, 122, 102, 0.2);
+}
+
 .action-btn i {
     font-size: 2.5rem;
     color: var(--accent-red);
@@ -270,6 +287,10 @@
 
 .magic-btn i {
     color: var(--mana-color);
+}
+
+.defend-btn i {
+    color: var(--accent-green);
 }
 
 .action-name {
@@ -293,9 +314,21 @@
 }
 
 .result-card {
+    background-color: var(--bg-card);
+    border: 3px solid;
+    border-radius: 15px;
     padding: 3rem;
     text-align: center;
     margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.result-card.victory {
+    border-color: var(--accent-green);
+}
+
+.result-card.defeat {
+    border-color: var(--accent-red);
 }
 
 .result-icon {
@@ -382,7 +415,6 @@
 }
 
 /* responsive */
-
 @media (max-width: 1200px) {
     .combat-layout {
         grid-template-columns: 1fr;
