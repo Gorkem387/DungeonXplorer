@@ -20,7 +20,8 @@ class ProfileController
 
     private function getHeroesByUserId($userId)
     {
-        $stmt = $this->db->prepare("
+        $bdd = Database::getConnection();
+        $stmt = $this->$bdd->prepare("
             SELECT h.*, c.name as class_name, c.image as class_image
             FROM Hero h
             LEFT JOIN Class c ON h.class_id = c.id
@@ -48,12 +49,12 @@ class ProfileController
                 echo json_encode([
                     'name' => $character['name'],
                     'class_name' => $character['class_name'],
-                    'chapter' => 'Chapitre ' . $character['current_level'], // Remplace par la logique réelle de progression
+                    'chapter' => 'Chapitre ' . $character['current_level'],
                     'pv' => $character['pv'],
                     'initiative' => $character['initiative'],
                     'strength' => $character['strength'],
                     'mana' => $character['mana'],
-                    'equipment' => 'Equipement standard', // Remplace par la logique réelle
+                    'equipment' => 'Equipement standard',
                 ]);
             } else {
                 echo json_encode(['error' => 'Personnage non trouvé']);
