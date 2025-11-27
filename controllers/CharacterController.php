@@ -22,11 +22,12 @@ class CharacterController
             else{
                 $description = 'Personnage';
             }
-            if (isset($_FILES['image'])){
-                $image = htmlspecialchars($_POST['image']);
+            if (isset($_POST['image'])){
+                $image = basename(htmlspecialchars($_POST['image']));
+                $image = '../public/img/personnage/' . $image;
             }
             else{
-                $image = '../public/img/guerrier.jpg';
+                $image = '../public/img/personnage/Wizard.jpg';
             }
 
             $result_class = $bdd -> query("Select * From Class Where name = '" . $type . "';");
