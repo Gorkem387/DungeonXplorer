@@ -16,7 +16,7 @@ class ProfileController
             exit();
         }
 
-        $personnages = $this->getHeroesByUserId($_SESSION['user_id']);
+        $heros = $this->getHeroesByUserId($_SESSION['user_id']);
 
         require 'views/profile/index.php';
     }

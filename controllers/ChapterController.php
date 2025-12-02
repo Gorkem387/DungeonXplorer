@@ -25,6 +25,11 @@ class ChapterController
             echo "Chapitre non trouvé!";
             return;
         }
+
+        if (isset($_GET['hero_id'])) {
+            $_SESSION['current_hero_id'] = (int) $_GET['hero_id'];
+            error_log("Héros choisi pour l'aventure : " . $_SESSION['current_hero_id']);
+        }
         
         error_log("Chapitre {$id} trouvé");
 
@@ -40,10 +45,17 @@ class ChapterController
                 $_SESSION['encounter_monster_id'] = $encounter['monster_id'];
 
                 if (!isset($_SESSION['current_hero_id'])) {
-                    error_log("Pas de héros actif, redirection vers /character/list");
-                    $_SESSION['error'] = "Vous devez choisir un héros avant d'entrer dans ce chapitre !";
-                    header("Location: /profil");
-                    exit();
+                    require_once 'models/Hero.php';
+                    $heroModel = new Hero();
+                    $hero = $heroModel->findByUserId($_SESSION['user_id']);
+                    if ($hero) {
+                        $_SESSION['current_hero_id'] = $hero['id'];
+                        error_log("Héros actif automatiquement sélectionné : " . $hero['id']);
+                    } else {
+                        $_SESSION['error'] = "Vous devez créer un héros avant d'entrer dans ce chapitre !";
+                        header("Location: /profil");
+                        exit();
+                    }
                 }
                 
                 error_log("Redirection vers /combat/start/" . $encounter['id']);

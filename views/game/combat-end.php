@@ -56,7 +56,7 @@
                         <i class="fa-solid fa-forward"></i> Continuer l'aventure
                     </a>
                 <?php else: ?>
-                    <a href="/character/list" class="btn-custom btn-success">
+                    <a href="/profil" class="btn-custom btn-success">
                         <i class="fa-solid fa-forward"></i> Continuer l'aventure
                     </a>
                 <?php endif; ?>
@@ -64,7 +64,7 @@
                     <i class="fa-solid fa-home"></i> Retour au profil
                 </a>
             <?php else: ?>
-                <a href="/character/list" class="btn-custom btn-danger">
+                <a href="/profil" class="btn-custom btn-danger">
                     <i class="fa-solid fa-rotate-right"></i> Choisir un autre héros
                 </a>
                 <a href="/profil" class="btn-custom">
