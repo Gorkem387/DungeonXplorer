@@ -54,14 +54,14 @@
                 <a href="/game/continue" class="btn-custom btn-success">
                     <i class="fa-solid fa-forward"></i> Continuer l'aventure
                 </a>
-                <a href="/character/list" class="btn-custom">
+                <a href="/profil" class="btn-custom">
                     <i class="fa-solid fa-home"></i> Retour à mes héros
                 </a>
             <?php else: ?>
                 <a href="/combat/start" class="btn-custom btn-danger">
                     <i class="fa-solid fa-rotate-right"></i> Recommencer le combat
                 </a>
-                <a href="/character/list" class="btn-custom">
+                <a href="/profil" class="btn-custom">
                     <i class="fa-solid fa-home"></i> Retour à mes héros
                 </a>
             <?php endif; ?>
