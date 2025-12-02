@@ -77,14 +77,13 @@ class Inventory
     /**
      * Récupère l'inventaire d'un héros avec les détails des items
      */
-    public static function getByHeroIdWithItems($heroId)
+    public static function getHeroItems($heroId)
     {
         $db = Database::getConnection();
         
-        $query = "SELECT inv.id, inv.hero_id, inv.item_id, inv.quantity,
-                         i.name, i.description, i.type
+        $query = "SELECT i.name, inv.quantity, i.description, i.item_type
                   FROM Inventory inv
-                  INNER JOIN Item i ON inv.item_id = i.id
+                  INNER JOIN Items i ON inv.item_id = i.id
                   WHERE inv.hero_id = :hero_id";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':hero_id', $heroId, PDO::PARAM_INT);
@@ -92,18 +91,12 @@ class Inventory
         
         $inventoryItems = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $inventory = new Inventory(
-                $data['id'],
-                $data['hero_id'],
-                $data['item_id'],
-                $data['quantity']
-            );
-            $inventory->item = new Item(
-                $data['item_id'],
+            $inventory = [
                 $data['name'],
+                $data['quantity'],
                 $data['description'],
-                $data['type']
-            );
+                $data['item_type']
+            ];
             $inventoryItems[] = $inventory;
         }
         
