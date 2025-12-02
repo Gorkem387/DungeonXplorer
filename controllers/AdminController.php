@@ -97,19 +97,7 @@ class AdminController
         'desc' => $desc,
         'id' => $chapterId
     ));
-    
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-        $image = $_FILES['image'];
-        $imagePath = 'path/to/save/' . basename($image['name']);
-        move_uploaded_file($image['tmp_name'], $imagePath);
-        $updateImage = 'UPDATE Chapter SET image = :image WHERE id = :id';
-        $reqImage = $bdd->prepare($updateImage);
-        $reqImage->execute(array(
-            'image' => $imagePath,
-            'id' => $chapterId
-        ));
-    }
-    
+      
     $deleteLinks = 'DELETE FROM Links WHERE chapter_id = :id OR next_chapter_id = :id';
     $reqDelete = $bdd->prepare($deleteLinks);
     $reqDelete->execute(array('id' => $chapterId));
@@ -154,13 +142,8 @@ class AdminController
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $desc = htmlspecialchars($_POST['desc']);
-            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                $image = $_FILES['image'];
-                $imagePath = '../public/img/' . basename($image['name']);
-                move_uploaded_file($image['tmp_name'], $imagePath);
-            } else {
-                $imagePath = '../public/img/Castle01.jpg';
-            }
+            $imagePath = '../public/img/Castle01.jpg';
+        
 
             $insert = $bdd -> prepare("Insert Into Chapter (content, image) 
             Values (:desc, :image);");

@@ -41,19 +41,6 @@
 
                     <div class="form-section">
                         <div class="section-header">
-                            <div class="section-icon">🖼️</div>
-                            <h2>Image d'illustration</h2>
-                        </div>
-                        <div class="file-upload-area">
-                            <input type="file" id="image" name="image" accept="image/*">
-                            <div class="file-upload-icon">📁</div>
-                            <div class="file-upload-text">Glissez votre image ici</div>
-                            <div class="file-upload-hint">ou cliquez pour parcourir</div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <div class="section-header">
                             <div class="section-icon">⬅️</div>
                             <h2>Chapitres précédents</h2>
                         </div>
