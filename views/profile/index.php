@@ -30,7 +30,7 @@
     <div class="card-container">
         <?php foreach ($personnages as $personnage): ?>
         <div class="perso-card">
-            <img src="/public/img/<?= htmlspecialchars($personnage['image']) ?>" alt="Image du personnage" class="perso-card-img">
+            <img src="/public/img/personnage/<?= htmlspecialchars($personnage['image']) ?>" alt="Image du personnage" class="perso-card-img">
             <div class="perso-card-contenu">
                 <div class="perso-card-nom"><?= htmlspecialchars($personnage['name']) ?></div>
                 <button id="btnVoirDetails" class="btn-custom" onclick="openInfo(<?= $personnage['id'] ?>)">Voir détails</button>
@@ -54,7 +54,7 @@
         <i class="fa-solid fa-user-plus"></i> Ajouter un personnage
     </a>
     </div>
-    
+
 </body>
 </html>
 
