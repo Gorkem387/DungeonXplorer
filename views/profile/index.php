@@ -50,5 +50,4 @@
 </body>
 </html>
 
-<?php require_once 'views/profile/list.php'; ?>
 <?php require_once 'views/layouts/footer.php'; ?>

@@ -62,6 +62,12 @@ class AuthController {
                     'password' => $hashed_password
                 ))){
                     $_SESSION['username'] = $username;
+                    
+                    $stmt = $bdd->prepare("SELECT id FROM utilisateur WHERE name = :name");
+                    $stmt->execute(['name' => $username]);
+                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $_SESSION['user_id'] = $user['id'];
+                    
                     header("Location: /hero");
                     exit();
                 }                
@@ -78,33 +84,34 @@ class AuthController {
             }
         }
     }
+    
     public function handleLogin() {
         session_start();
         require_once 'models/Database.php';
-
         $bdd = Database::getConnection();
-
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $username = htmlspecialchars($_POST['username']);
             $password = htmlspecialchars($_POST['password']);
 
-            $rep = $bdd -> query("Select mdp, perm_user From utilisateur Where name = '" . $username . "';");
+            $stmt = $bdd->prepare("SELECT id, mdp, perm_user FROM utilisateur WHERE name = :username");
+            $stmt->execute(['username' => $username]);
 
-            if ($rep->rowCount() > 0) {
-                $data = $rep->fetch();
+            if ($stmt->rowCount() > 0) {
+                $data = $stmt->fetch(PDO::FETCH_ASSOC);
                 $hashed_password = $data['mdp'];
 
                 if (password_verify($password, $hashed_password)) {
                     $_SESSION['username'] = $username;
+                    $_SESSION['user_id'] = $data['id'];
                     $_SESSION['perm'] = $data['perm_user'];
-                    if ($data['perm_user']==1){
-                        header("Location: /admin");
-                    }
-                    else{
-                        header("Location: /hero");
-                    }
                     
+                    if ($data['perm_user'] == 1){
+                        header("Location: /admin");
+                    } else {
+                        header("Location: /profil");
+                    }
+                    exit();
                 } else {
                     $_SESSION['error'] = "Mot de passe incorrect";
                     header("Location: /login"); 
@@ -114,7 +121,6 @@ class AuthController {
                 $_SESSION['error'] = "Nom d'utilisateur non trouvé";
                 header("Location: /login"); 
                 exit();
-                
             }
         }
     }

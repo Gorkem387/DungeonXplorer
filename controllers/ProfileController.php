@@ -11,10 +11,10 @@ class ProfileController
         require_once 'models/Database.php';
         $bdd = Database::getConnection();
 
-        /*if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
             header("Location: /login");
             exit();
-        }*/
+        }
 
         $personnages = $this->getHeroesByUserId($_SESSION['user_id']);
 
@@ -39,15 +39,29 @@ class ProfileController
 
     public function getCharacterDetails()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            echo json_encode(['error' => 'Non authentifié']);
+            exit();
+        }
+        
         if (isset($_GET['id'])) {
             require_once 'models/Database.php';
             $bdd = Database::getConnection();
 
-            $stmt = $bdd->prepare("SELECT h.*, c.name as class_name, c.image as class_image
-                                   FROM Hero h
-                                   LEFT JOIN Class c ON h.class_id = c.id
-                                   WHERE h.id = :id");
-            $stmt->execute(['id' => $_GET['id']]);
+            $stmt = $bdd->prepare("
+                SELECT h.*, c.name as class_name, c.image as class_image
+                FROM Hero h
+                LEFT JOIN Class c ON h.class_id = c.id
+                WHERE h.id = :id AND h.id_utilisateur = :user_id
+            ");
+            $stmt->execute([
+                'id' => $_GET['id'],
+                'user_id' => $_SESSION['user_id']
+            ]);
             $character = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($character) {
@@ -59,7 +73,6 @@ class ProfileController
                     'initiative' => $character['initiative'],
                     'strength' => $character['strength'],
                     'mana' => $character['mana'],
-                    'equipment' => 'Equipement standard',
                 ]);
             } else {
                 echo json_encode(['error' => 'Personnage non trouvé']);
