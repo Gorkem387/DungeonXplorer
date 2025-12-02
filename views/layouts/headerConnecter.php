@@ -33,7 +33,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/profile">
+                        <a class="nav-link" href="/profil">
                             <i class="fa-solid fa-right-to-bracket"></i> Profile
                         </a>
                     </li>
