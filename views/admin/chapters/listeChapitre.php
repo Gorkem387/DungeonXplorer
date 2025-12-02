@@ -5,12 +5,10 @@
 
     require_once 'models/Database.php';
     $bdd = Database::getConnection();
-    if (isset($_SESSION['username'])){
-        require_once 'views/layouts/headerConnecter.php';
+    if (!isset($_SESSION['username'])){
+        header("Location: /");  
     }
-    else{
-        require_once 'views/layouts/header.php';
-    }
+    require_once 'views/layouts/headerConnecter.php';
 
 ?>
 <!DOCTYPE html>

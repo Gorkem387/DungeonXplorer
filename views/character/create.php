@@ -2,18 +2,16 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    if (isset($_SESSION['username'])){
-            require_once 'views/layouts/headerConnecter.php';
-        }
-else{
-    require_once 'views/layouts/header.php';
-} 
-require_once 'models/Database.php';
-$bdd = Database::getConnection();
-$query = "SELECT * FROM Class";
-$stmt = $bdd->prepare($query);
-$stmt->execute();
-$classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!isset($_SESSION['username'])){
+        header("Location: /");  
+    }
+    require_once 'views/layouts/headerConnecter.php';
+    require_once 'models/Database.php';
+    $bdd = Database::getConnection();
+    $query = "SELECT * FROM Class";
+    $stmt = $bdd->prepare($query);
+    $stmt->execute();
+    $classes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
