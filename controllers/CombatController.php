@@ -25,8 +25,15 @@ class CombatController
         
         require_once 'models/Monster.php';
         $monsterModel = new Monster();
-        $monster = $monsterModel->findRandom();
+        //$_SESSION['encounter_monster_id'] = $encounter['monster_id'];
         
+        if (isset($_SESSION['encounter_monster_id'])) {
+            $monster = $monsterModel->findById($_SESSION['encounter_monster_id']);
+            unset($_SESSION['encounter_monster_id']);
+        } else {
+            $monster = $monsterModel->findRandom();
+        }
+
         if (!$monster) {
             die("Aucun monstre trouvé");
         }

@@ -15,14 +15,13 @@ class Monster
      */
     public function findAll()
     {
-        $query = $this->db->query("
-            SELECT Monster.*, class.name as class_name 
-            FROM Monster
-            LEFT JOIN class ON Monster.class_id = class.id
-            ORDER BY Monster.id DESC
-        ");
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+    $query = $this->db->query("
+        SELECT * FROM Monster
+        ORDER BY id DESC
+    ");
+    return $query->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     /**
      * Récupérer un monstre par son ID
@@ -30,10 +29,9 @@ class Monster
     public function findById($id)
     {
         $query = $this->db->prepare("
-            SELECT Monster.*, class.name as class_name 
+            SELECT *
             FROM Monster
-            LEFT JOIN class ON Monster.class_id = class.id
-            WHERE Monster.id = :id
+            where id = :id
         ");
         $query->execute(['id' => $id]);
         return $query->fetch(PDO::FETCH_ASSOC);

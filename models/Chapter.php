@@ -46,6 +46,33 @@ class Chapter
         
         $this->links = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public static function hasEncounter($chapterId)
+    {
+        $db = Database::getConnection();
+        
+        $query = "SELECT COUNT(*) FROM Encounter WHERE chapter_id = :chapter_id";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':chapter_id', $chapterId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchColumn() > 0;
+    }
+    public static function getEncounterWithMonster($chapterId)
+    {
+        $db = Database::getConnection();
+        
+        $query = "SELECT e.id, e.chapter_id, e.monster_id, 
+                         m.name, m.pv, m.mana, m.initiative,m.strength, m.xp
+                  FROM Encounter e
+                  INNER JOIN Monster m ON e.monster_id = m.id
+                  WHERE e.chapter_id = :chapter_id";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':chapter_id', $chapterId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function getId()
     {
         return $this->id;
