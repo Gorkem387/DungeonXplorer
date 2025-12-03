@@ -14,6 +14,7 @@ class Chapter
         $this->content = $content;
         $this->image = $image;
     }
+    
     public static function findById($id)
     {
         $db = Database::getConnection();
@@ -33,6 +34,7 @@ class Chapter
         
         return null;
     }
+    
     private function loadLinks()
     {
         $db = Database::getConnection();
@@ -46,6 +48,7 @@ class Chapter
         
         $this->links = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
     public static function hasEncounter($chapterId)
     {
         $db = Database::getConnection();
@@ -57,12 +60,13 @@ class Chapter
         
         return $stmt->fetchColumn() > 0;
     }
+    
     public static function getEncounterWithMonster($chapterId)
     {
         $db = Database::getConnection();
         
         $query = "SELECT e.id, e.chapter_id, e.monster_id, 
-                         m.name, m.pv, m.mana, m.initiative,m.strength, m.xp
+                         m.name, m.pv, m.mana, m.initiative, m.strength, m.xp, m.img
                   FROM Encounter e
                   INNER JOIN Monster m ON e.monster_id = m.id
                   WHERE e.chapter_id = :chapter_id";
@@ -71,6 +75,22 @@ class Chapter
         $stmt->execute();
         
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public static function getNextChapterAfterEncounter($chapterId)
+    {
+        $db = Database::getConnection();
+        
+        $query = "SELECT next_chapter_id 
+                  FROM Links 
+                  WHERE chapter_id = :chapter_id 
+                  LIMIT 1";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':chapter_id', $chapterId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['next_chapter_id'] : null;
     }
 
     public function getId()

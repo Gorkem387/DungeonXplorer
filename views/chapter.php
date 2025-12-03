@@ -24,15 +24,23 @@
         
         <?php if ($chapter->getImage()): ?>
             <img src="/public/img/<?php echo htmlspecialchars($chapter->getImage()); ?>" 
-                 alt="Chapitre <?php echo htmlspecialchars($chapter->getId()); ?>" 
-                 >
+                 alt="Chapitre <?php echo htmlspecialchars($chapter->getId()); ?>">
         <?php endif; ?>
         
         <div class="content">
             <?php echo nl2br(htmlspecialchars($chapter->getContent())); ?>
         </div>
         
-        <?php if (!empty($chapter->getLinks())): ?>
+        <?php if (isset($encounter) && $encounter): ?>         
+            <form method="POST" action="/combat/start/<?php echo $_SESSION['current_hero_id']; ?>">
+                <input type="hidden" name="chapter_id" value="<?php echo $chapter->getId(); ?>">
+                <button type="submit" class="encounter-button">
+                    <i class="fa-solid fa-dragon"></i>
+                    Affronter le monstre
+                </button>
+            </form>
+            
+        <?php elseif (!empty($chapter->getLinks())): ?>
             <h2>Choisissez votre chemin :</h2>
             <ul class="choices">
                 <?php foreach ($chapter->getLinks() as $link): ?>

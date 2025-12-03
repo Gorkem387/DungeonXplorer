@@ -26,21 +26,27 @@
     <h2>Liste de mes personnages</h2>
 
     <div class="card-container">
-        <?php foreach ($personnages as $personnage): ?>
-        <div class="perso-card">
-            <img src="/public/img/personnage/<?= htmlspecialchars($personnage['image']) ?>" alt="Image du personnage" class="perso-card-img">
-            <div class="perso-card-contenu">
-                <div class="perso-card-nom"><?= htmlspecialchars($personnage['name']) ?></div>
-                <button id="btnVoirDetails" class="btn-custom" onclick="openInfo(<?= $personnage['id'] ?>)">Voir détails</button>
-            </div>
+    <?php foreach ($heros as $hero): ?>
+    <div class="perso-card">
+        <img src="<?= htmlspecialchars($hero['image']) ?>" alt="Image du hero" class="perso-card-img">
+        <div class="perso-card-contenu">
+            <div class="perso-card-nom"><?= htmlspecialchars($hero['name']) ?></div>
+            <form method="GET" action="/chapter/1">
+                <input type="hidden" name="hero_id" value="<?= $hero['id'] ?>">
+                <button type="submit" class="btn-custom">
+                    <i class="fa-solid fa-dragon"></i> Partir à l'aventure
+                </button>
+            </form>
         </div>
-        <?php endforeach; ?>
     </div>
+    <?php endforeach; ?>
+    </div>
+
 
     <div id="info" class="info-perso">
         <div class="info-perso-contenu">
             <button id="btnFermerInfo" class="info-perso-fermer">&times;</button>
-            <h3 class="info-perso-titre">Détails du personnage</h3>
+            <h3 class="info-perso-titre">Détails du hero</h3>
                 <div class="cadre-info">
                     
                 </div>
@@ -49,7 +55,7 @@
     
     <div class="btnAddChar">
     <a href="/hero" class="btn-custom">
-        <i class="fa-solid fa-user-plus"></i> Ajouter un personnage
+        <i class="fa-solid fa-user-plus"></i> Créer un hero
     </a>
     </div>
 
