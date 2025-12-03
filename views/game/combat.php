@@ -130,7 +130,7 @@ else{
                     </div>
 
                     <div class="combatant-image">
-                        <img src="/public/img/Evil warrior.jpg" alt="Monstre">
+                        <img src="<?= htmlspecialchars($monster['img']) ?>" alt="Monstre">
                     </div>
                     
                         

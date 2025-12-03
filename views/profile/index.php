@@ -25,15 +25,17 @@
 
     <h2>Liste de mes personnages</h2>
 
-    <?php foreach ($personnages as $personnage): ?>
-    <div class="perso-card">
-        <img src="/public/img/<?= htmlspecialchars($personnage['image']) ?>" alt="Image du personnage" class="perso-card-img">
-        <div class="perso-card-contenu">
-            <div class="perso-card-nom"><?= htmlspecialchars($personnage['name']) ?></div>
-            <button id="btnVoirDetails" class="btn-custom" onclick="openInfo(<?= $personnage['id'] ?>)">Voir détails</button>
+    <div class="card-container">
+        <?php foreach ($personnages as $personnage): ?>
+        <div class="perso-card">
+            <img src="/public/img/personnage/<?= htmlspecialchars($personnage['image']) ?>" alt="Image du personnage" class="perso-card-img">
+            <div class="perso-card-contenu">
+                <div class="perso-card-nom"><?= htmlspecialchars($personnage['name']) ?></div>
+                <button id="btnVoirDetails" class="btn-custom" onclick="openInfo(<?= $personnage['id'] ?>)">Voir détails</button>
+            </div>
         </div>
+        <?php endforeach; ?>
     </div>
-    <?php endforeach; ?>
 
     <div id="info" class="info-perso">
         <div class="info-perso-contenu">
@@ -43,6 +45,12 @@
                     
                 </div>
         </div>
+    </div>
+    
+    <div class="btnAddChar">
+    <a href="/hero" class="btn-custom">
+        <i class="fa-solid fa-user-plus"></i> Ajouter un personnage
+    </a>
     </div>
 
 </body>

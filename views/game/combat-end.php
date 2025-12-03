@@ -4,10 +4,10 @@
     }
     if (isset($_SESSION['username'])){
         require_once 'views/layouts/headerConnecter.php';
-        }
-    else{
+    } else {
         require_once 'views/layouts/header.php';
-    } ?>
+    } 
+?>
 
 <link rel="stylesheet" href="/public/css/combat.css">
 
@@ -51,18 +51,24 @@
         
         <div class="combat-actions-end">
             <?php if ($resultat['winner'] === 'hero'): ?>
-                <a href="/game/continue" class="btn-custom btn-success">
-                    <i class="fa-solid fa-forward"></i> Continuer l'aventure
-                </a>
-                <a href="/character/list" class="btn-custom">
-                    <i class="fa-solid fa-home"></i> Retour à mes héros
+                <?php if ($resultat['is_encounter'] && isset($resultat['next_chapter'])): ?>
+                    <a href="/chapter/<?= $resultat['next_chapter'] ?>" class="btn-custom btn-success">
+                        <i class="fa-solid fa-forward"></i> Continuer l'aventure
+                    </a>
+                <?php else: ?>
+                    <a href="/character/list" class="btn-custom btn-success">
+                        <i class="fa-solid fa-forward"></i> Continuer l'aventure
+                    </a>
+                <?php endif; ?>
+                <a href="/profil" class="btn-custom">
+                    <i class="fa-solid fa-home"></i> Retour au profil
                 </a>
             <?php else: ?>
-                <a href="/combat/start" class="btn-custom btn-danger">
-                    <i class="fa-solid fa-rotate-right"></i> Recommencer le combat
+                <a href="/character/list" class="btn-custom btn-danger">
+                    <i class="fa-solid fa-rotate-right"></i> Choisir un autre héros
                 </a>
-                <a href="/character/list" class="btn-custom">
-                    <i class="fa-solid fa-home"></i> Retour à mes héros
+                <a href="/profil" class="btn-custom">
+                    <i class="fa-solid fa-home"></i> Retour au profil
                 </a>
             <?php endif; ?>
         </div>
