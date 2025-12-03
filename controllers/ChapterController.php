@@ -33,40 +33,30 @@ class ChapterController
         
         error_log("Chapitre {$id} trouvé");
 
-        if (Chapter::hasEncounter($id)) {
+        // Vérifier si c'est un encounter
+        $hasEncounter = Chapter::hasEncounter($id);
+        $encounter = null;
+        
+        if ($hasEncounter) {
             error_log("Encounter détecté pour le chapitre {$id}");
-
             $encounter = Chapter::getEncounterWithMonster($id);
             
-            if ($encounter) {
-                error_log("Monstre de l'encounter: " . $encounter['monster_id'] . " - " . $encounter['name']);
-                
-                $_SESSION['chapter_after_combat'] = $id;
-                $_SESSION['encounter_monster_id'] = $encounter['monster_id'];
-
-                if (!isset($_SESSION['current_hero_id'])) {
-                    require_once 'models/Hero.php';
-                    $heroModel = new Hero();
-                    $hero = $heroModel->findByUserId($_SESSION['user_id']);
-                    if ($hero) {
-                        $_SESSION['current_hero_id'] = $hero['id'];
-                        error_log("Héros actif automatiquement sélectionné : " . $hero['id']);
-                    } else {
-                        $_SESSION['error'] = "Vous devez créer un héros avant d'entrer dans ce chapitre !";
-                        header("Location: /profil");
-                        exit();
-                    }
+            if (!isset($_SESSION['current_hero_id'])) {
+                require_once 'models/Hero.php';
+                $heroModel = new Hero();
+                $heroes = $heroModel->findByUserId($_SESSION['user_id']);
+                if (!empty($heroes)) {
+                    $_SESSION['current_hero_id'] = $heroes[0]['id'];
+                    error_log("Héros actif automatiquement sélectionné : " . $heroes[0]['id']);
+                } else {
+                    $_SESSION['error'] = "Vous devez créer un héros avant d'entrer dans ce chapitre !";
+                    header("Location: /profil");
+                    exit();
                 }
-                
-                error_log("Redirection vers /combat/start/" . $encounter['id']);
-                header("Location: /combat/start/" . $_SESSION['current_hero_id']);
-                exit();
             }
-        } else {
-            error_log("Pas d'encounter pour le chapitre {$id}");
         }
 
-        error_log("Affichage normal du chapitre {$id}");
+        error_log("Affichage du chapitre {$id}");
         require $_SERVER['DOCUMENT_ROOT'] . '/views/chapter.php';
     }
 }

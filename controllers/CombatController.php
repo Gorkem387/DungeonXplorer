@@ -6,6 +6,10 @@ class CombatController
     {
         session_start();
         
+        if (isset($_POST['chapter_id'])) {
+            $_SESSION['chapter_after_combat'] = $_POST['chapter_id'];
+        }
+        
         if ($id !== null) {
             $_SESSION['current_hero_id'] = $id;
         }
@@ -25,7 +29,6 @@ class CombatController
         
         require_once 'models/Monster.php';
         $monsterModel = new Monster();
-        //$_SESSION['encounter_monster_id'] = $encounter['monster_id'];
         
         if (isset($_SESSION['encounter_monster_id'])) {
             $monster = $monsterModel->findById($_SESSION['encounter_monster_id']);
