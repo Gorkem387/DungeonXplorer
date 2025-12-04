@@ -13,9 +13,9 @@ class Hero
     public function findAll()
     {
         $query = $this->db->query("
-            SELECT Hero.*, Class.name as class_name 
+            SELECT Hero.*, c.name as class_name 
             FROM Hero 
-            LEFT JOIN Class ON Hero.class_id = Class.id
+            LEFT JOIN Class c ON Hero.class_id = c.id
             ORDER BY Hero.id DESC
         ");
         return $query->fetchAll(PDO::FETCH_ASSOC);

@@ -1,5 +1,6 @@
 <?php
 require_once 'models/Chapter.php';
+require_once 'models/Encounter.php';
 
 class ChapterController
 {
@@ -7,11 +8,7 @@ class ChapterController
     {
         session_start();
         
-        error_log("ChapterController::show");
-        error_log("ID demandé: " . $id);
-        
         if (!isset($_SESSION['username'])) {
-            error_log("Utilisateur non connecté, redirection vers /login");
             header("Location: /login");
             exit();
         }
@@ -19,55 +16,28 @@ class ChapterController
         $chapter = Chapter::findById($id);
         
         if (!$chapter) {
-            error_log("Chapitre {$id} non trouvé en base");
             http_response_code(404);
             echo "Chapitre non trouvé!";
             return;
         }
-        
-        $nextChapterId = (int)$id + 1;
-
-        require_once 'models/Database.php';
-        $bdd = Database::getConnection();
-
-        $stmt = $bdd->prepare("SELECT id FROM Chapter WHERE id = :next_id");
-        $stmt->execute(['next_id' => $nextChapterId]);
-        $nextChapterExists = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $has_next_chapter = (bool)$nextChapterExists;
-        $next_chapter_id = $has_next_chapter ? $nextChapterId : null;
 
         if (isset($_POST['hero_id'])) {
             $_SESSION['current_hero_id'] = (int) $_POST['hero_id'];
-            error_log("Héros choisi pour l'aventure : " . $_SESSION['current_hero_id']);
         }
         
-        error_log("Chapitre {$id} trouvé");
-
         $hasEncounter = Chapter::hasEncounter($id);
         $encounter = null;
         
         if ($hasEncounter) {
-            error_log("Encounter détecté pour le chapitre {$id}");
             $encounter = Chapter::getEncounterWithMonster($id);
             
             if (!isset($_SESSION['current_hero_id'])) {
-                require_once 'models/Hero.php';
-                $heroModel = new Hero();
-                $heroes = $heroModel->findByUserId($_SESSION['user_id']);
-                if (!empty($heroes)) {
-                    $_SESSION['current_hero_id'] = $heroes[0]['id'];
-                    error_log("Héros actif automatiquement sélectionné : " . $heroes[0]['id']);
-                } else {
-                    $_SESSION['error'] = "Vous devez créer un héros avant d'entrer dans ce chapitre !";
-                    header("Location: /profil");
-                    exit();
-                }
-                require 'views/chapter.php';
+                $_SESSION['error'] = "Veuillez sélectionner un héros avant de commencer un combat.";
+                header("Location: /profil");
+                exit();
             }
         }
 
-        error_log("Affichage du chapitre {$id}");
         require $_SERVER['DOCUMENT_ROOT'] . '/views/chapter.php';
     }
 
@@ -104,17 +74,6 @@ class ChapterController
                     'status' => 'STARTED'
         ));
 
-        /*$stmt = $bdd->prepare("SELECT level FROM Level WHERE required_xp <= :xp order by required_xp desc LIMIT 1");
-        $stmt->execute(array('xp' => $currentXP));
-        $level = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $updateHero = $bdd->prepare("Update Hero set current_level = :level where id = :hero");
-                
-        $updateHero->execute(array(
-            'level' => $level['level'],
-            'hero' => $hero,
-        ));*/
-
         header("Location: /chapter/".$id);
 
     }
@@ -129,6 +88,11 @@ class ChapterController
             $_SESSION['current_hero_id'] = (int) $_POST['hero_id'];
         }
 
+        if (!isset($_SESSION['current_hero_id'])) {
+            header("Location: /profil");
+            exit();
+        }
+
         $hero = $_SESSION['current_hero_id'];
 
         $stmt = $bdd->prepare("SELECT xp FROM Hero WHERE id = :hero");
@@ -136,25 +100,36 @@ class ChapterController
             'hero' => $hero
         ));
         $xp = $stmt->fetch(PDO::FETCH_ASSOC);
-        /*if ($xp['xp'] == 0){
+
+        $stmt = $bdd->prepare("SELECT chapter_id FROM Hero_Progress WHERE hero_id = :hero and status = 'STARTED'");
+        $stmt->execute(array(
+            'hero' => $hero
+        ));
+        $chapter = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $targetChapterId = null;
+
+        if ($chapter) {
+            $targetChapterId = $chapter['chapter_id'];
+        } else {
+            $startChapterId = 1;
+            
             $insert = $bdd->prepare("INSERT INTO Hero_Progress (hero_id, chapter_id, status) 
             VALUES (:hero, :chapter, :status)");
-                
+            
             $insert->execute(array(
                 'hero' => $hero,
-                'chapter' => 1,
+                'chapter' => $startChapterId,
                 'status' => 'STARTED'
             ));
-            header("Location: /chapter/1"); 
+            $targetChapterId = $startChapterId;
         }
-        else{*/
-            $stmt = $bdd->prepare("SELECT chapter_id FROM Hero_Progress WHERE hero_id = :hero and status = 'STARTED'");
-            $stmt->execute(array(
-                'hero' => $hero
-            ));
-            $chapter = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-            header("Location: /chapter/".$chapter['chapter_id']);
-        //}    
+
+        if ($targetChapterId) {
+            header("Location: /chapter/".$targetChapterId);
+        } else {
+            header("Location: /profil");
+        }
+        exit();
     }
 }
