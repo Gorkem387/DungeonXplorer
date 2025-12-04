@@ -2,11 +2,10 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    if (isset($_SESSION['username'])){
-        require_once 'views/layouts/headerConnecter.php';
-    } else {
-        require_once 'views/layouts/header.php';
+    if (!isset($_SESSION['username'])){
+        header("Location: /");  
     }
+    require_once 'views/layouts/headerConnecter.php';
 ?>
 
 <!DOCTYPE html>
@@ -53,7 +52,7 @@
             </div>
 
             <div class="play-section">
-                <a href="/profile" class="play-btn">
+                <a href="/profil" class="play-btn">
                     <i class="fas fa-play"></i>
                     Jouer au jeu
                 </a>

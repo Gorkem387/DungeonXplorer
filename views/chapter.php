@@ -43,11 +43,17 @@
         <?php elseif (!empty($chapter->getLinks())): ?>
             <h2>Choisissez votre chemin :</h2>
             <ul class="choices">
-                <?php foreach ($chapter->getLinks() as $link): ?>
+                <?php foreach ($chapter->getLinks() as $link): 
+                    $_SESSION['currentChapterId'] = $chapter->getId();?>
                     <li>
-                        <a href="/chapter/<?php echo $link['next_chapter_id']; ?>">
-                            <?php echo htmlspecialchars($link['description']); ?>
-                        </a>
+                        <form method="post" action="/chapitre/next">
+                            <input type="hidden" name="id" value="<?php echo $link['next_chapter_id']?>">
+                            <button type="submit" class="btn btn-modify"><?php echo htmlspecialchars($link['description'])?></button>
+                        </form>
+                        <!--
+                            <a href="/chapter/<?php// echo $link['next_chapter_id']; ?>">
+                            <?php //echo htmlspecialchars($link['description']); ?>
+                        </a>---->
                     </li>
                 <?php endforeach; ?>
             </ul>

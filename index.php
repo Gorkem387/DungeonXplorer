@@ -18,6 +18,8 @@ $router->addRoute('profil','ProfileController@index');
 $router->addRoute('register/submit', 'AuthController@handleRegister');
 $router->addRoute('login/submit', 'AuthController@handleLogin');
 $router->addRoute('chapter/{id}', 'ChapterController@show');
+$router->addRoute('chapitre/next', 'ChapterController@handleNext');
+$router->addRoute('chapitre/start', 'ChapterController@Start');
 $router->addRoute('hero', 'CharacterController@index');
 $router->addRoute('hero/submit', 'CharacterController@handleHero');
 $router->addRoute('admin', 'AdminController@index');

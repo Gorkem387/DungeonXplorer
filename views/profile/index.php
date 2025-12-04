@@ -2,12 +2,10 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    if (isset($_SESSION['username'])){
-            require_once 'views/layouts/headerConnecter.php';
-        }
-    else{
-        require_once 'views/layouts/header.php';
-    } 
+    if (!isset($_SESSION['username'])){
+        header("Location: /");  
+    }
+    require_once 'views/layouts/headerConnecter.php';
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +31,7 @@
         <img src="<?= htmlspecialchars($hero['image']) ?>" alt="Image du hero" class="perso-card-img">
         <div class="perso-card-contenu">
             <div class="perso-card-nom"><?= htmlspecialchars($hero['name']) ?></div>
-            <form method="GET" action="/chapter/1">
+            <form method="POST" action="chapitre/start">
                 <input type="hidden" name="hero_id" value="<?= $hero['id'] ?>">
                 <button type="submit" class="btn-custom">
                     <i class="fa-solid fa-dragon"></i> Partir à l'aventure

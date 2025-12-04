@@ -32,11 +32,19 @@ if (session_status() === PHP_SESSION_NONE) {
                             <i class="fa-solid fa-home"></i> Accueil
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profil">
-                            <i class="fa-solid fa-right-to-bracket"></i> Profile
-                        </a>
-                    </li>
+                    <?php if ($_SESSION['username']=='admin'){
+                        echo '<li class="nav-item">';
+                            echo '<a class="nav-link" href="/admin">';
+                                echo '<i class="fa-solid fa-right-to-bracket"></i> Profile';
+                            echo '</a>';
+                        echo'</li>';
+                    }if ($_SESSION['username']!='admin'){
+                        echo '<li class="nav-item">';
+                            echo '<a class="nav-link" href="/profil">';
+                                echo '<i class="fa-solid fa-right-to-bracket"></i> Profile';
+                            echo '</a>';
+                        echo'</li>';
+                    }?>
                     <li class="nav-item">
                         <a class="nav-link" href="/logout">
                             <i class="fa-solid fa-user-plus"></i> Se deconnecter
