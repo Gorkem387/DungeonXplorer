@@ -32,9 +32,9 @@
         </div>
         
         <?php if (isset($encounter) && $encounter): ?>         
-            <form method="POST" action="/combat/start/<?php echo $_SESSION['current_hero_id']; ?>">
+            <form method="POST" action="/combat/start/<?php echo $_SESSION['current_hero_id']; ?>" class="combat-start-form">
                 <input type="hidden" name="chapter_id" value="<?php echo $chapter->getId(); ?>">
-                <button type="submit" class="encounter-button">
+                <button type="submit" class="btn-custom" style="width: 100%; max-width: 400px; margin: 1.5rem auto 0; display: block;">
                     <i class="fa-solid fa-dragon"></i>
                     Affronter le monstre
                 </button>

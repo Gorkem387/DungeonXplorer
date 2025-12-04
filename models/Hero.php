@@ -24,26 +24,51 @@ class Hero
     public function findById($id)
     {
         $query = $this->db->prepare("
-            SELECT Hero.*, Class.name as class_name 
-            FROM Hero 
-            LEFT JOIN Class ON Hero.class_id = Class.id
-            WHERE Hero.id = :id
+            SELECT 
+                H.*, 
+                C.name as class_name, 
+                C.base_pv, 
+                C.base_mana,
+                L.pv_bonus,
+                L.mana_bonus
+            FROM Hero H 
+            LEFT JOIN Class C ON H.class_id = C.id
+            LEFT JOIN Level L ON L.class_id = H.class_id AND L.level = H.current_level
+            WHERE H.id = :id
         ");
         $query->execute(['id' => $id]);
-        return $query->fetch(PDO::FETCH_ASSOC);
+        $hero = $query->fetch(PDO::FETCH_ASSOC);
+
+        if ($hero) {
+            $basePv = $hero['base_pv'] ?? 0;
+            $bonusPv = $hero['pv_bonus'] ?? 0;
+
+            $baseMana = $hero['base_mana'] ?? 0;
+            $bonusMana = $hero['mana_bonus'] ?? 0;
+
+            $hero['max_pv'] = $basePv + $bonusPv;
+            $hero['max_mana'] = $baseMana + $bonusMana;
+
+            $hero['pv'] = min($hero['pv'], $hero['max_pv']);
+            $hero['mana'] = min($hero['mana'], $hero['max_mana']);
+        }
+        
+        return $hero;
     }
     
     public function findByUserId($userId)
     {
         $query = $this->db->prepare("
-            SELECT Hero.*, Class.name as class_name 
+            SELECT Hero.*, c.name as class_name 
             FROM Hero 
-            LEFT JOIN Class ON Hero.class_id = Class.id
+            LEFT JOIN Class c ON Hero.class_id = c.id
             WHERE Hero.id_utilisateur = :user_id
             ORDER BY Hero.id DESC
         ");
         $query->execute(['user_id' => $userId]);
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+        $heroes = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $heroes;
     }
     
     public function create($data)

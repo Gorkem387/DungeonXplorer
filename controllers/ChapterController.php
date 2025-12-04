@@ -1,6 +1,5 @@
 <?php
 require_once 'models/Chapter.php';
-require_once 'models/Encounter.php';
 
 class ChapterController
 {
@@ -25,15 +24,26 @@ class ChapterController
             echo "Chapitre non trouvé!";
             return;
         }
+        
+        $nextChapterId = (int)$id + 1;
 
-        if (isset($_GET['hero_id'])) {
-            $_SESSION['current_hero_id'] = (int) $_GET['hero_id'];
+        require_once 'models/Database.php';
+        $bdd = Database::getConnection();
+
+        $stmt = $bdd->prepare("SELECT id FROM Chapter WHERE id = :next_id");
+        $stmt->execute(['next_id' => $nextChapterId]);
+        $nextChapterExists = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $has_next_chapter = (bool)$nextChapterExists;
+        $next_chapter_id = $has_next_chapter ? $nextChapterId : null;
+
+        if (isset($_POST['hero_id'])) {
+            $_SESSION['current_hero_id'] = (int) $_POST['hero_id'];
             error_log("Héros choisi pour l'aventure : " . $_SESSION['current_hero_id']);
         }
         
         error_log("Chapitre {$id} trouvé");
 
-        // Vérifier si c'est un encounter
         $hasEncounter = Chapter::hasEncounter($id);
         $encounter = null;
         
@@ -53,6 +63,7 @@ class ChapterController
                     header("Location: /profil");
                     exit();
                 }
+                require 'views/chapter.php';
             }
         }
 

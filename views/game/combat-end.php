@@ -20,7 +20,7 @@
                     <i class="fa-solid fa-trophy"></i>
                 </div>
                 <h1 class="result-title">Victoire !</h1>
-                <p class="result-text">Vous avez triomphé dans ce combat épique !</p>
+                <p class="result-text"><?= htmlspecialchars($resultat['hero_name']) ?> a triomphé contre <?= htmlspecialchars($resultat['monster_name']) ?> !</p>
                 
                 <div class="rewards">
                     <h3><i class="fa-solid fa-gift"></i> Récompenses</h3>
@@ -36,39 +36,30 @@
                     <i class="fa-solid fa-skull"></i>
                 </div>
                 <h1 class="result-title">Défaite</h1>
-                <p class="result-text">Vous avez été vaincu... Mais ne baissez pas les bras !</p>
+                <p class="result-text"><?= htmlspecialchars($resultat['hero_name']) ?> a été vaincu par <?= htmlspecialchars($resultat['monster_name']) ?>...</p>
+                <p class="result-text" style="margin-top: 20px; color: #fbbf24;">
+                    <i class="fa-solid fa-heart"></i> Vous vous réveillez avec 20 PV
+                </p>
             </div>
         <?php endif; ?>
         
-        <div class="combat-summary">
-            <h3><i class="fa-solid fa-scroll"></i> Résumé du combat</h3>
-            <div class="summary-log">
-                <?php foreach ($resultat['log'] as $message): ?>
-                    <p><?= htmlspecialchars($message) ?></p>
-                <?php endforeach; ?>
-            </div>
-        </div>
-        
         <div class="combat-actions-end">
             <?php if ($resultat['winner'] === 'hero'): ?>
-                <?php if ($resultat['is_encounter'] && isset($resultat['next_chapter'])): ?>
-                    <a href="/chapter/<?= $resultat['next_chapter'] ?>" class="btn-custom btn-success">
+                <?php if ($resultat['has_next_chapter']): ?>
+                    <a href="/chapter/<?= $resultat['next_chapter_id'] ?>" class="btn-custom btn-success">
                         <i class="fa-solid fa-forward"></i> Continuer l'aventure
+                    </a>
+                    <a href="/profil" class="btn-custom">
+                        <i class="fa-solid fa-home"></i> Retour au profil
                     </a>
                 <?php else: ?>
                     <a href="/profil" class="btn-custom btn-success">
-                        <i class="fa-solid fa-forward"></i> Continuer l'aventure
+                        <i class="fa-solid fa-home"></i> Retour au profil
                     </a>
                 <?php endif; ?>
-                <a href="/profil" class="btn-custom">
-                    <i class="fa-solid fa-home"></i> Retour au profil
-                </a>
             <?php else: ?>
                 <a href="/profil" class="btn-custom btn-danger">
-                    <i class="fa-solid fa-rotate-right"></i> Choisir un autre héros
-                </a>
-                <a href="/profil" class="btn-custom">
-                    <i class="fa-solid fa-home"></i> Retour au profil
+                    <i class="fa-solid fa-rotate-right"></i> Retour au profil
                 </a>
             <?php endif; ?>
         </div>

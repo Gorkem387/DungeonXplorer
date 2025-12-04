@@ -19,6 +19,8 @@ class Chapter
     {
         $db = Database::getConnection();
         
+        if ($db === null) { return null; }
+
         $query = "SELECT id, content, image FROM Chapter WHERE id = :id";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -39,6 +41,8 @@ class Chapter
     {
         $db = Database::getConnection();
         
+        if ($db === null) { return; }
+
         $query = "SELECT chapter_id, next_chapter_id, description 
                   FROM Links 
                   WHERE chapter_id = :chapter_id";
@@ -53,6 +57,8 @@ class Chapter
     {
         $db = Database::getConnection();
         
+        if ($db === null) { return false; }
+
         $query = "SELECT COUNT(*) FROM Encounter WHERE chapter_id = :chapter_id";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':chapter_id', $chapterId, PDO::PARAM_INT);
@@ -65,8 +71,10 @@ class Chapter
     {
         $db = Database::getConnection();
         
+        if ($db === null) { return null; }
+
         $query = "SELECT e.id, e.chapter_id, e.monster_id, 
-                         m.name, m.pv, m.mana, m.initiative, m.strength, m.xp, m.img
+                          m.name, m.pv, m.mana, m.initiative, m.strength, m.xp, m.img
                   FROM Encounter e
                   INNER JOIN Monster m ON e.monster_id = m.id
                   WHERE e.chapter_id = :chapter_id";
@@ -80,6 +88,8 @@ class Chapter
     public static function getNextChapterAfterEncounter($chapterId)
     {
         $db = Database::getConnection();
+        
+        if ($db === null) { return null; }
         
         $query = "SELECT next_chapter_id 
                   FROM Links 

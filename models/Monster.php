@@ -10,43 +10,37 @@ class Monster
         $this->db = Database::getConnection();
     }
     
-    /**
-     * Récupérer tous les monstres
-     */
-    public function findAll()
-    {
-    $query = $this->db->query("
-        SELECT * FROM Monster
-        ORDER BY id DESC
-    ");
-    return $query->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-
-    /**
-     * Récupérer un monstre par son ID
-     */
     public function findById($id)
     {
         $query = $this->db->prepare("
             SELECT *
             FROM Monster
-            where id = :id
+            WHERE id = :id
         ");
         $query->execute(['id' => $id]);
-        return $query->fetch(PDO::FETCH_ASSOC);
-    }
+        $monster = $query->fetch(PDO::FETCH_ASSOC);
 
-    /**
-     * Récupérer un monstre aléatoire
-     */
+        if ($monster) {
+            $monster['max_pv'] = $monster['pv']; 
+        }
+        
+        return $monster;
+    }
+    
     public function findRandom()
     {
         $query = $this->db->query("
-            SELECT * FROM Monster
+            SELECT *
+            FROM Monster
             ORDER BY RAND()
             LIMIT 1
         ");
-        return $query->fetch(PDO::FETCH_ASSOC);
+        $monster = $query->fetch(PDO::FETCH_ASSOC);
+
+        if ($monster) {
+            $monster['max_pv'] = $monster['pv']; 
+        }
+        
+        return $monster;
     }
 }

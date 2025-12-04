@@ -1,4 +1,5 @@
 <?php
+
 class Database {
     private static $connection = null;
     
@@ -16,7 +17,8 @@ class Database {
                 );
                 self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch (PDOException $e) {
-                die("Erreur de connexion : " . $e->getMessage());
+                error_log("Erreur de connexion à la base de données: " . $e->getMessage());
+                return null; 
             }
         }
         return self::$connection;

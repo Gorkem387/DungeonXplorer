@@ -6,24 +6,23 @@ class Item
     private $id;
     private $name;
     private $description;
-    private $type;
+    private $item_type;
 
-    public function __construct($id, $name, $description, $type)
+    public function __construct($id, $name, $description, $item_type)
     {
         $this->id = $id;
         $this->name = $name;
         $this->description = $description;
-        $this->type = $type;
+        $this->item_type = $item_type;
     }
 
-    /**
-     * Récupère un item par son ID
-     */
     public static function findById($id)
     {
         $db = Database::getConnection();
+
+        if ($db === null) { return null; }
         
-        $query = "SELECT id, name, description, type FROM Item WHERE id = :id";
+        $query = "SELECT id, name, description, item_type FROM Items WHERE id = :id";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -35,21 +34,20 @@ class Item
                 $data['id'],
                 $data['name'],
                 $data['description'],
-                $data['type']
+                $data['item_type']
             );
         }
         
         return null;
     }
 
-    /**
-     * Récupère tous les items
-     */
     public static function findAll()
     {
         $db = Database::getConnection();
+
+        if ($db === null) { return []; }
         
-        $query = "SELECT id, name, description, type FROM Item";
+        $query = "SELECT id, name, description, item_type FROM Items";
         $stmt = $db->query($query);
         
         $items = [];
@@ -58,22 +56,21 @@ class Item
                 $data['id'],
                 $data['name'],
                 $data['description'],
-                $data['type']
+                $data['item_type']
             );
         }
         
         return $items;
     }
 
-    /**
-     * Récupère les items d'un chapitre spécifique
-     */
     public static function findByChapterId($chapterId)
     {
         $db = Database::getConnection();
+
+        if ($db === null) { return []; }
         
-        $query = "SELECT i.id, i.name, i.description, i.type 
-                  FROM Item i
+        $query = "SELECT i.id, i.name, i.description, i.item_type 
+                  FROM Items i
                   INNER JOIN Chapter_Item ci ON i.id = ci.item_id
                   WHERE ci.chapter_id = :chapter_id";
         $stmt = $db->prepare($query);
@@ -86,26 +83,25 @@ class Item
                 $data['id'],
                 $data['name'],
                 $data['description'],
-                $data['type']
+                $data['item_type']
             );
         }
         
         return $items;
     }
 
-    /**
-     * Sauvegarde un nouvel item
-     */
     public function save()
     {
         $db = Database::getConnection();
+
+        if ($db === null) { return $this; }
         
-        $query = "INSERT INTO Item (name, description, type) 
-                  VALUES (:name, :description, :type)";
+        $query = "INSERT INTO Items (name, description, item_type) 
+                  VALUES (:name, :description, :item_type)";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':name', $this->name);
         $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':type', $this->type);
+        $stmt->bindParam(':item_type', $this->item_type);
         $stmt->execute();
         
         $this->id = $db->lastInsertId();
@@ -113,15 +109,14 @@ class Item
         return $this;
     }
 
-    /**
-     * Met à jour un item existant
-     */
     public function update()
     {
         $db = Database::getConnection();
+
+        if ($db === null) { return $this; }
         
-        $query = "UPDATE Item 
-                  SET name = :name, description = :description, type = :type 
+        $query = "UPDATE Items 
+                  SET name = :name, description = :description, item_type = :item_type 
                   WHERE id = :id";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
@@ -133,14 +128,13 @@ class Item
         return $this;
     }
 
-    /**
-     * Supprime un item
-     */
     public function delete()
     {
         $db = Database::getConnection();
+
+        if ($db === null) { return false; }
         
-        $query = "DELETE FROM Item WHERE id = :id";
+        $query = "DELETE FROM Items WHERE id = :id";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         $stmt->execute();
@@ -148,7 +142,6 @@ class Item
         return true;
     }
 
-    // Getters
     public function getId()
     {
         return $this->id;
@@ -166,10 +159,9 @@ class Item
 
     public function getType()
     {
-        return $this->type;
+        return $this->item_type;
     }
 
-    // Setters
     public function setName($name)
     {
         $this->name = $name;
@@ -182,6 +174,6 @@ class Item
 
     public function setType($type)
     {
-        $this->type = $type;
+        $this->item_type = $item_type;
     }
 }

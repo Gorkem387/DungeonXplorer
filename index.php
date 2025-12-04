@@ -1,4 +1,6 @@
 <?php
+ob_start();
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -35,6 +37,8 @@ $router->addRoute('combat/attack', 'CombatController@attack');
 $router->addRoute('combat/magic', 'CombatController@magic');
 $router->addRoute('combat/defend', 'CombatController@defend');
 $router->addRoute('combat/end', 'CombatController@end');
+$router->addRoute('combat/action', 'CombatController@handleAction');
+$router->addRoute('combat/inventory', 'CombatController@getInventory');
 
 
 
