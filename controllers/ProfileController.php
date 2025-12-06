@@ -81,4 +81,6 @@ class ProfileController
             echo json_encode(['error' => 'ID manquant']);
         }
     }
+
+    
 }

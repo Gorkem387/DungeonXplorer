@@ -57,8 +57,11 @@
     <a href="/hero" class="btn-custom">
         <i class="fa-solid fa-user-plus"></i> Créer un hero
     </a>
+    <button id ="btnRemoveChar" class="btn-custom"><i class="fa-solid fa-user-minus"></i> Supprimer personnage</button>
     </div>
 
+
+    
 </body>
 </html>
 

@@ -59,3 +59,4 @@ btnFermerInfo.addEventListener('click', function(event) {
     info.classList.remove('active');
     document.body.style.overflow='auto';
 });
+

@@ -43,5 +43,4 @@ $router->addRoute('combat/action', 'CombatController@handleAction');
 $router->addRoute('combat/inventory', 'CombatController@getInventory');
 
 
-
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));
