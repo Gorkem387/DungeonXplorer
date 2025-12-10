@@ -39,12 +39,13 @@
                     Affronter le monstre
                 </button>
             </form>
+            <?php $_SESSION['currentChapterId'] = $chapter->getId(); ?>
             
         <?php elseif (!empty($chapter->getLinks())): ?>
             <h2>Choisissez votre chemin :</h2>
             <ul class="choices">
-                <?php foreach ($chapter->getLinks() as $link): 
-                    $_SESSION['currentChapterId'] = $chapter->getId();?>
+            <?php $_SESSION['currentChapterId'] = $chapter->getId();
+                foreach ($chapter->getLinks() as $link): ?>
                     <li>
                         <form method="post" action="/chapitre/next">
                             <input type="hidden" name="id" value="<?php echo $link['next_chapter_id']?>">
