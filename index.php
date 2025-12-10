@@ -41,6 +41,8 @@ $router->addRoute('combat/defend', 'CombatController@defend');
 $router->addRoute('combat/end', 'CombatController@end');
 $router->addRoute('combat/action', 'CombatController@handleAction');
 $router->addRoute('combat/inventory', 'CombatController@getInventory');
+$router->addRoute('leaderboard', 'ChapterController@displayLeaderboard');
+$router->addRoute('timeline/{id}', 'ChapterController@displayProgressionTimeline');
 
 
 $router->route(trim($_SERVER['REQUEST_URI'], '/'));
