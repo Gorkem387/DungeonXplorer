@@ -39,7 +39,7 @@
                     Affronter le monstre
                 </button>
             </form>
-            <?php $_SESSION['currentChapterId'] = $chapter->getId(); ?>
+            <?php $_SESSION['currentChapterId'] = $chapter->getId();?>
             
         <?php elseif (!empty($chapter->getLinks())): ?>
             <h2>Choisissez votre chemin :</h2>
@@ -51,10 +51,6 @@
                             <input type="hidden" name="id" value="<?php echo $link['next_chapter_id']?>">
                             <button type="submit" class="btn btn-modify"><?php echo htmlspecialchars($link['description'])?></button>
                         </form>
-                        <!--
-                            <a href="/chapter/<?php// echo $link['next_chapter_id']; ?>">
-                            <?php //echo htmlspecialchars($link['description']); ?>
-                        </a>---->
                     </li>
                 <?php endforeach; ?>
             </ul>
