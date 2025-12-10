@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_SESSION['username'])) {
     header("Location: /login");
@@ -177,7 +179,6 @@ if (!isset($_SESSION['username'])) {
                         <th>Rang</th>
                         <th>Héros</th>
                         <th>Joueur</th>
-                        <th>Classe</th>
                         <th>Niveau</th>
                         <th>Expérience</th>
                         <th>Chapitres Complétés</th>

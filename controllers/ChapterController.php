@@ -250,11 +250,11 @@ class ChapterController
                 H.current_level,
                 H.xp,
                 C.name as class_name,
-                U.username,
+                U.name,
                 COUNT(HP.id) as chapters_completed
             FROM Hero H
             LEFT JOIN Class C ON H.class_id = C.id
-            LEFT JOIN User U ON H.id_utilisateur = U.id
+            LEFT JOIN utilisateur U ON H.id_utilisateur = U.id
             LEFT JOIN Hero_Progress HP ON H.id = HP.hero_id AND HP.status = 'COMPLETED'
             GROUP BY H.id
             ORDER BY H.current_level DESC, H.xp DESC
