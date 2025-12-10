@@ -123,14 +123,12 @@ class ChapterController
                     'hero' => $hero
                 ));
 
-                // Check if hero leveled up
                 $getNewLevel = $bdd->prepare("SELECT current_level FROM Hero WHERE id = :hero");
                 $getNewLevel->execute(array('hero' => $hero));
                 $newLevelData = $getNewLevel->fetch(PDO::FETCH_ASSOC);
                 $newLevel = $newLevelData['current_level'];
 
                 if ($newLevel > $oldLevel) {
-                    // Create level-up notification
                     $insertNotif = $bdd->prepare("
                         INSERT INTO Level_Up_Log (hero_id, old_level, new_level, level_up_date)
                         VALUES (:hero_id, :old_level, :new_level, NOW())
@@ -141,7 +139,6 @@ class ChapterController
                         'new_level' => $newLevel
                     ));
 
-                    // Store level-up message in session for display
                     $_SESSION['level_up_notification'] = array(
                         'hero_id' => $hero,
                         'old_level' => $oldLevel,
@@ -245,6 +242,7 @@ class ChapterController
         require_once 'models/Database.php';
         $bdd = Database::getConnection();
 
+        $limit = (int)$limit;
         $stmt = $bdd->prepare("
             SELECT 
                 H.id,
@@ -260,9 +258,9 @@ class ChapterController
             LEFT JOIN Hero_Progress HP ON H.id = HP.hero_id AND HP.status = 'COMPLETED'
             GROUP BY H.id
             ORDER BY H.current_level DESC, H.xp DESC
-            LIMIT :limit
+            LIMIT $limit
         ");
-        $stmt->execute(array('limit' => $limit));
+        $stmt->execute();
         $leaderboard = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $leaderboard;

@@ -46,6 +46,11 @@ if (session_status() === PHP_SESSION_NONE) {
                         echo'</li>';
                     }?>
                     <li class="nav-item">
+                        <a class="nav-link" href="/leaderboard">
+                            <i class="fa-solid fa-trophy"></i> Classement
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/logout">
                             <i class="fa-solid fa-user-plus"></i> Se deconnecter
                         </a>

@@ -31,12 +31,17 @@
         <img src="<?= htmlspecialchars($hero['image']) ?>" alt="Image du hero" class="perso-card-img">
         <div class="perso-card-contenu">
             <div class="perso-card-nom"><?= htmlspecialchars($hero['name']) ?></div>
-            <form method="POST" action="chapitre/start">
-                <input type="hidden" name="hero_id" value="<?= $hero['id'] ?>">
-                <button type="submit" class="btn-custom">
-                    <i class="fa-solid fa-dragon"></i> Partir à l'aventure
-                </button>
-            </form>
+            <div style="display:flex;gap:10px;flex-direction:column;">
+                <form method="POST" action="chapitre/start" style="margin:0;">
+                    <input type="hidden" name="hero_id" value="<?= $hero['id'] ?>">
+                    <button type="submit" class="btn-custom" style="width:100%;margin:0;">
+                        <i class="fa-solid fa-dragon"></i> Partir à l'aventure
+                    </button>
+                </form>
+                <a href="/timeline/<?= $hero['id'] ?>" class="btn-custom" style="text-align:center;text-decoration:none;display:block;margin:0;">
+                    <i class="fa-solid fa-chart-line"></i> Ma Progression
+                </a>
+            </div>
         </div>
     </div>
     <?php endforeach; ?>
@@ -56,6 +61,9 @@
     <div class="btnAddChar">
     <a href="/hero" class="btn-custom">
         <i class="fa-solid fa-user-plus"></i> Créer un hero
+    </a>
+    <a href="/leaderboard" class="btn-custom">
+        <i class="fa-solid fa-trophy"></i> Classement des Héros
     </a>
     <button id ="btnRemoveChar" class="btn-custom"><i class="fa-solid fa-user-minus"></i> Supprimer personnage</button>
     </div>
