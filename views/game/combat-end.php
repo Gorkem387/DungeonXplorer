@@ -65,9 +65,12 @@
         <div class="combat-actions-end">
             <?php if ($resultat['winner'] === 'hero'): ?>
                 <?php if ($resultat['has_next_chapter']): ?>
-                    <a href="/chapter/next" class="btn-custom btn-success">
-                        <i class="fa-solid fa-forward"></i> Continuer l'aventure
-                    </a>
+                    <form method="POST" action="/chapitre/next" style="display:inline;">
+                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($resultat['next_chapter_id']);?>">
+                        <button type="submit" class="btn-custom btn-success" style="border:none; cursor:pointer;">
+                            <i class="fa-solid fa_forward"></i> Continuer l'aventure
+                        </button>
+                    </form>
                     <a href="/profil" class="btn-custom">
                         <i class="fa-solid fa-home"></i> Retour au profil
                     </a>
