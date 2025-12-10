@@ -256,11 +256,11 @@ class ChapterController
                     H.current_level,
                     H.xp,
                     COALESCE(C.name, 'Inconnu') as class_name,
-                    COALESCE(U.username, 'N/A') as username,
+                    COALESCE(U.name, 'N/A') as username,
                     COUNT(HP.id) as chapters_completed
                 FROM Hero H
                 LEFT JOIN Class C ON H.class_id = C.id
-                LEFT JOIN User U ON H.id_utilisateur = U.id
+                LEFT JOIN utilisateur U ON H.id_utilisateur = U.id
                 LEFT JOIN Hero_Progress HP ON H.id = HP.hero_id AND HP.status = 'COMPLETED'
                 WHERE H.name IS NOT NULL AND TRIM(H.name) <> ''
                 GROUP BY H.id

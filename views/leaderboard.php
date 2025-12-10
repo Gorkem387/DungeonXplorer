@@ -17,13 +17,13 @@ if (!isset($_SESSION['username'])) {
     <title>Classement - DungeonXplorer</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        .leaderboard-container {
-            max-width: 900px;
-            margin: 50px auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            border-radius: 10px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+           .leaderboard-container {
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border-radius: 10px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .leaderboard-title {
@@ -55,9 +55,14 @@ if (!isset($_SESSION['username'])) {
             border-bottom: 2px solid #667eea;
         }
 
+        .leaderboard-table th:nth-child(2) {
+            text-align: center;
+        }
+
         .leaderboard-table td {
             padding: 12px 15px;
             border-bottom: 1px solid #eee;
+            color: #333; 
         }
 
         .leaderboard-table tbody tr:hover {
@@ -98,6 +103,11 @@ if (!isset($_SESSION['username'])) {
         .hero-name {
             font-weight: bold;
             color: #333;
+            text-align: center;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .class-badge {
@@ -107,7 +117,7 @@ if (!isset($_SESSION['username'])) {
             font-size: 0.85em;
             font-weight: bold;
             color: #fff;
-            background: #333; /* default dark background for contrast */
+            background: #333; 
             box-shadow: inset 0 -2px 0 rgba(0,0,0,0.15);
         }
 
@@ -127,7 +137,6 @@ if (!isset($_SESSION['username'])) {
             background: #f39c12;
         }
 
-        /* default class for unknown or custom classes */
         .class-inconnu, .class-default {
             background: #6b7280;
             color: #fff;
@@ -187,6 +196,7 @@ if (!isset($_SESSION['username'])) {
                         <th>Rang</th>
                         <th>Héros</th>
                         <th>Joueur</th>
+                        <th>Classe</th>
                         <th>Niveau</th>
                         <th>Expérience</th>
                         <th>Chapitres Complétés</th>
