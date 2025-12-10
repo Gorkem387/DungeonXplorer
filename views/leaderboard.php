@@ -104,7 +104,9 @@ if (!isset($_SESSION['username'])) {
             border-radius: 20px;
             font-size: 0.85em;
             font-weight: bold;
-            color: white;
+            color: #fff;
+            background: #333; /* default dark background for contrast */
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.15);
         }
 
         .class-warrior {
@@ -121,6 +123,12 @@ if (!isset($_SESSION['username'])) {
 
         .class-paladin {
             background: #f39c12;
+        }
+
+        /* default class for unknown or custom classes */
+        .class-inconnu, .class-default {
+            background: #6b7280;
+            color: #fff;
         }
 
         .level-stat {

@@ -72,6 +72,12 @@ class ChapterController
             'hero' => $hero
         ));
 
+        // Get old level before applying XP/level changes
+        $getOldLevel = $bdd->prepare("SELECT current_level FROM Hero WHERE id = :hero");
+        $getOldLevel->execute(array('hero' => $hero));
+        $oldLevelRow = $getOldLevel->fetch(PDO::FETCH_ASSOC);
+        $oldLevel = $oldLevelRow ? (int)$oldLevelRow['current_level'] : 0;
+
         $updateLevel = $bdd->prepare("
             UPDATE Hero SET current_level = CASE 
                 WHEN xp >= 2700 THEN 10
@@ -89,56 +95,55 @@ class ChapterController
         ");
         $updateLevel->execute(array('hero' => $hero));
 
+        // Get new level and class
         $getHero = $bdd->prepare("SELECT current_level, class_id FROM Hero WHERE id = :hero");
         $getHero->execute(array('hero' => $hero));
         $heroData = $getHero->fetch(PDO::FETCH_ASSOC);
 
         if ($heroData) {
-            $oldLevel = $heroData['current_level'];
-            $newLevel = $heroData['current_level'];
+            $newLevel = (int)$heroData['current_level'];
             $classId = $heroData['class_id'];
 
-            $getBonus = $bdd->prepare("
-                SELECT pv_bonus, mana_bonus, strength_bonus, initiative_bonus 
-                FROM Level 
-                WHERE class_id = :class_id AND level = :level
-            ");
-            $getBonus->execute(array('class_id' => $classId, 'level' => $newLevel));
-            $bonus = $getBonus->fetch(PDO::FETCH_ASSOC);
-
-            if ($bonus) {
-                $applyBonus = $bdd->prepare("
-                    UPDATE Hero SET 
-                        pv = pv + :pv_bonus,
-                        mana = mana + :mana_bonus,
-                        strength = strength + :strength_bonus,
-                        initiative = initiative + :initiative_bonus
-                    WHERE id = :hero
+            // If leveled up, log and apply bonuses
+            if ($newLevel > $oldLevel) {
+                // Insert level up log
+                $insertNotif = $bdd->prepare("
+                    INSERT INTO Level_Up_Log (hero_id, old_level, new_level, level_up_date)
+                    VALUES (:hero_id, :old_level, :new_level, NOW())
                 ");
-                $applyBonus->execute(array(
-                    'pv_bonus' => $bonus['pv_bonus'],
-                    'mana_bonus' => $bonus['mana_bonus'],
-                    'strength_bonus' => $bonus['strength_bonus'],
-                    'initiative_bonus' => $bonus['initiative_bonus'],
-                    'hero' => $hero
+                $insertNotif->execute(array(
+                    'hero_id' => $hero,
+                    'old_level' => $oldLevel,
+                    'new_level' => $newLevel
                 ));
 
-                $getNewLevel = $bdd->prepare("SELECT current_level FROM Hero WHERE id = :hero");
-                $getNewLevel->execute(array('hero' => $hero));
-                $newLevelData = $getNewLevel->fetch(PDO::FETCH_ASSOC);
-                $newLevel = $newLevelData['current_level'];
+                // Get bonuses from Level table
+                $getBonus = $bdd->prepare("
+                    SELECT pv_bonus, mana_bonus, strength_bonus, initiative_bonus 
+                    FROM Level 
+                    WHERE class_id = :class_id AND level = :level
+                ");
+                $getBonus->execute(array('class_id' => $classId, 'level' => $newLevel));
+                $bonus = $getBonus->fetch(PDO::FETCH_ASSOC);
 
-                if ($newLevel > $oldLevel) {
-                    $insertNotif = $bdd->prepare("
-                        INSERT INTO Level_Up_Log (hero_id, old_level, new_level, level_up_date)
-                        VALUES (:hero_id, :old_level, :new_level, NOW())
+                if ($bonus) {
+                    $applyBonus = $bdd->prepare("
+                        UPDATE Hero SET 
+                            pv = pv + :pv_bonus,
+                            mana = mana + :mana_bonus,
+                            strength = strength + :strength_bonus,
+                            initiative = initiative + :initiative_bonus
+                        WHERE id = :hero
                     ");
-                    $insertNotif->execute(array(
-                        'hero_id' => $hero,
-                        'old_level' => $oldLevel,
-                        'new_level' => $newLevel
+                    $applyBonus->execute(array(
+                        'pv_bonus' => $bonus['pv_bonus'],
+                        'mana_bonus' => $bonus['mana_bonus'],
+                        'strength_bonus' => $bonus['strength_bonus'],
+                        'initiative_bonus' => $bonus['initiative_bonus'],
+                        'hero' => $hero
                     ));
 
+                    // Set session notification
                     $_SESSION['level_up_notification'] = array(
                         'hero_id' => $hero,
                         'old_level' => $oldLevel,
@@ -243,24 +248,27 @@ class ChapterController
         $bdd = Database::getConnection();
 
         $limit = (int)$limit;
-        $stmt = $bdd->prepare("
-            SELECT 
-                H.id,
-                H.name,
-                H.current_level,
-                H.xp,
-                C.name as class_name,
-                U.username,
-                COUNT(HP.id) as chapters_completed
-            FROM Hero H
-            LEFT JOIN Class C ON H.class_id = C.id
-            LEFT JOIN User U ON H.id_utilisateur = U.id
-            LEFT JOIN Hero_Progress HP ON H.id = HP.hero_id AND HP.status = 'COMPLETED'
-            GROUP BY H.id
-            ORDER BY H.current_level DESC, H.xp DESC
-            LIMIT $limit
-        ");
-        $stmt->execute();
+            // Exclude heroes with empty/null names and coalesce optional fields for safer display
+            // Provide readable defaults for class and username so the view shows meaningful text
+            $sql = "SELECT
+                    H.id,
+                    H.name,
+                    H.current_level,
+                    H.xp,
+                    COALESCE(C.name, 'Inconnu') as class_name,
+                    COALESCE(U.username, 'N/A') as username,
+                    COUNT(HP.id) as chapters_completed
+                FROM Hero H
+                LEFT JOIN Class C ON H.class_id = C.id
+                LEFT JOIN User U ON H.id_utilisateur = U.id
+                LEFT JOIN Hero_Progress HP ON H.id = HP.hero_id AND HP.status = 'COMPLETED'
+                WHERE H.name IS NOT NULL AND TRIM(H.name) <> ''
+                GROUP BY H.id
+                ORDER BY H.current_level DESC, H.xp DESC
+                LIMIT $limit";
+
+            $stmt = $bdd->prepare($sql);
+            $stmt->execute();
         $leaderboard = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $leaderboard;
