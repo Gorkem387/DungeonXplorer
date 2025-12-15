@@ -29,6 +29,7 @@ class Hero
                 C.name as class_name, 
                 C.base_pv, 
                 C.base_mana,
+                C.max_items,
                 L.pv_bonus,
                 L.mana_bonus
             FROM Hero H 

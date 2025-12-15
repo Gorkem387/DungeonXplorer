@@ -225,6 +225,20 @@ class Inventory
         return true;
     }
 
+    public static function countItemStacks($heroId)
+    {
+        $db = Database::getConnection();
+        
+        if ($db === null) { return 0; }
+        
+        $query = "SELECT COUNT(id) FROM Inventory WHERE hero_id = :hero_id AND quantity > 0";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':hero_id', $heroId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return (int) $stmt->fetchColumn();
+    }
+
     public function getId()
     {
         return $this->id;

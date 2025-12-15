@@ -61,6 +61,22 @@
                 </p>
             </div>
         <?php endif; ?>
+
+        <?php if (!empty($resultat['loot_gained'])): ?>
+            <div class="rewards" style="margin-top: 20px; margin-bottom: 20px;">
+                <h3><i class="fa-solid fa-sack"></i> Butin Obtenu</h3>
+                <ul style="list-style-type: none; padding: 0;">
+                    <?php foreach ($resultat['loot_gained'] as $loot): ?>
+                        <li style="margin-bottom: 5px; color: #fff;">
+                            <?= htmlspecialchars($loot['name']) ?> (x<?= htmlspecialchars($loot['quantity']) ?>)
+                            <?php if (isset($loot['message'])): ?>
+                                <span style="color: <?= ($loot['status'] === 'lost_full' ? 'red' : '#a7f3d0'); ?>; font-size: 0.9em; font-weight: normal;"><?= htmlspecialchars($loot['message']) ?></span>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
         
         <div class="combat-actions-end">
             <?php if ($resultat['winner'] === 'hero'): ?>

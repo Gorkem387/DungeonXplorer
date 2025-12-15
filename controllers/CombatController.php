@@ -329,12 +329,64 @@ class CombatController
                 'hero_name' => $hero['name'],
                 'monster_name' => $monster['name'],
                 'next_chapter_id' => $nextChapterId, 
-                'has_next_chapter' => $nextChapterId !== null, 
+                'has_next_chapter' => $nextChapterId !== null,
+                'loot_gained' => []
             ];
             
             require_once 'models/Database.php';
             $bdd = Database::getConnection();
             
+            require_once 'models/MonsterLoot.php';
+            require_once 'models/Inventory.php';
+            require_once 'models/Item.php';
+            
+            $monsterLootModel = new MonsterLoot();
+            $droppedLoot = $monsterLootModel->getLoot($monster['id']);
+
+            $maxItems = $hero['max_items'] ?? 10; 
+            $currentStacks = Inventory::countItemStacks($hero['id']);
+            
+            $lootResults = [];
+
+            foreach ($droppedLoot as $loot) {
+                $itemId = $loot['item_id'];
+                $quantity = $loot['quantity'];
+                $existingItem = Inventory::hasItem($hero['id'], $itemId);
+                $itemObject = Item::findById($itemId);
+                
+                $itemName = (is_object($itemObject) && method_exists($itemObject, 'getName')) 
+                            ? $itemObject->getName() 
+                            : "Objet Inconnu ({$itemId})";
+                
+                if (!$existingItem && $currentStacks >= $maxItems) {
+                    $lootResults[] = [
+                        'name' => $itemName, 
+                        'quantity' => $quantity,
+                        'status' => 'lost_full',
+                        'message' => " (Inventaire plein : {$currentStacks}/{$maxItems}, objet perdu)"
+                    ];
+                    continue; 
+                }
+                
+                $itemAdded = Inventory::addItem($hero['id'], $itemId, $quantity);
+                
+                if ($itemAdded) {
+                    if (!$existingItem) {
+                        $currentStacks++;
+                    }
+                    
+                    $lootResults[] = [
+                        'name' => $itemName, 
+                        'quantity' => $quantity,
+                        'status' => 'added',
+                        'message' => " (Ajouté)"
+                    ];
+                }
+            }
+            
+            $resultat['loot_gained'] = $lootResults; 
+            $resultat['inventory_limit'] = ['current' => $currentStacks, 'max' => $maxItems];
+
             // Get old level before XP update
             $getOldLevel = $bdd->prepare("SELECT current_level FROM Hero WHERE id = :id");
             $getOldLevel->execute(['id' => $hero['id']]);
