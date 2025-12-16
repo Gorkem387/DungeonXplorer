@@ -234,7 +234,6 @@ if (!isset($_SESSION['username'])) {
                         <li>💪 Force : <strong><?php echo htmlspecialchars($stats['strength']); ?></strong></li>
                         <li>⚡ Initiative : <strong><?php echo htmlspecialchars($stats['initiative']); ?></strong></li>
                     </ul>
-                    <a href="/profile/stats" class="btn-custom">Voir plus de statistiques</a>
                 </div>
             </aside>
         </div>
