@@ -4,13 +4,15 @@ require_once 'models/Database.php';
 class Chapter
 {
     private $id;
+    private $title;
     private $content;
     private $image;
     private $links = [];
 
-    public function __construct($id, $content, $image)
+    public function __construct($id, $title, $content, $image)
     {
         $this->id = $id;
+        $this->title = $title;
         $this->content = $content;
         $this->image = $image;
     }
@@ -21,7 +23,7 @@ class Chapter
         
         if ($db === null) { return null; }
 
-        $query = "SELECT id, content, image FROM Chapter WHERE id = :id";
+        $query = "SELECT id, title, content, image FROM Chapter WHERE id = :id";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -29,7 +31,7 @@ class Chapter
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($data) {
-            $chapter = new Chapter($data['id'], $data['content'], $data['image']);
+            $chapter = new Chapter($data['id'], $data['title'] ?? null, $data['content'], $data['image']);
             $chapter->loadLinks();
             return $chapter;
         }
@@ -106,6 +108,11 @@ class Chapter
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getTitle()
+    {
+        return $this->title;
     }
 
     public function getContent()
