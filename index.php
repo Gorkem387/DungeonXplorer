@@ -22,6 +22,7 @@ $router->addRoute('chapitre/next', 'ChapterController@handleNext');
 $router->addRoute('chapitre/start', 'ChapterController@Start');
 $router->addRoute('hero', 'CharacterController@index');
 $router->addRoute('hero/submit', 'CharacterController@handleHero');
+$router->addRoute('hero/delete', 'CharacterController@delete');
 $router->addRoute('admin', 'AdminController@index');
 $router->addRoute('admin/joueur', 'AdminController@listeJoueur');
 $router->addRoute('admin/delete', 'AdminController@deleteJoueur');

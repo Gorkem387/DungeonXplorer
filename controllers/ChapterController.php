@@ -78,27 +78,36 @@ class ChapterController
         $oldLevelRow = $getOldLevel->fetch(PDO::FETCH_ASSOC);
         $oldLevel = $oldLevelRow ? (int)$oldLevelRow['current_level'] : 0;
 
-        $updateLevel = $bdd->prepare("
-            UPDATE Hero SET current_level = CASE 
-                WHEN xp >= 2700 THEN 10
-                WHEN xp >= 2200 THEN 9
-                WHEN xp >= 1750 THEN 8
-                WHEN xp >= 1350 THEN 7
-                WHEN xp >= 1000 THEN 6
-                WHEN xp >= 700 THEN 5
-                WHEN xp >= 450 THEN 4
-                WHEN xp >= 250 THEN 3
-                WHEN xp >= 100 THEN 2
-                ELSE 1
-            END 
-            WHERE id = :hero
-        ");
-        $updateLevel->execute(array('hero' => $hero));
+        // Get old stats to compute gains later
+        $getOldStats = $bdd->prepare("SELECT pv, mana, strength, initiative FROM Hero WHERE id = :hero");
+        $getOldStats->execute(['hero' => $hero]);
+        $oldStats = $getOldStats->fetch(PDO::FETCH_ASSOC);
+        $oldPv = (int)($oldStats['pv'] ?? 0);
+        $oldMana = (int)($oldStats['mana'] ?? 0);
+        $oldStrength = (int)($oldStats['strength'] ?? 0);
+        $oldInitiative = (int)($oldStats['initiative'] ?? 0);
 
-        // Get new level and class
-        $getHero = $bdd->prepare("SELECT current_level, class_id FROM Hero WHERE id = :hero");
-        $getHero->execute(array('hero' => $hero));
-        $heroData = $getHero->fetch(PDO::FETCH_ASSOC);
+        // Determine new level based on the Level table (class-specific required_xp)
+        $getXpAndClass = $bdd->prepare("SELECT xp, class_id FROM Hero WHERE id = :hero");
+        $getXpAndClass->execute(['hero' => $hero]);
+        $heroRow = $getXpAndClass->fetch(PDO::FETCH_ASSOC);
+        if ($heroRow) {
+            $xp = (int)$heroRow['xp'];
+            $classId = $heroRow['class_id'];
+
+            $getLevel = $bdd->prepare("SELECT level FROM `Level` WHERE class_id = :class_id AND required_xp <= :xp ORDER BY level DESC LIMIT 1");
+            $getLevel->execute(['class_id' => $classId, 'xp' => $xp]);
+            $levelRow = $getLevel->fetch(PDO::FETCH_ASSOC);
+            $newLevel = $levelRow ? (int)$levelRow['level'] : 1;
+
+            $updateLevel = $bdd->prepare("UPDATE Hero SET current_level = :level WHERE id = :hero");
+            $updateLevel->execute(['level' => $newLevel, 'hero' => $hero]);
+        } else {
+            $newLevel = 1;
+            $classId = null;
+        }
+
+        $heroData = ['current_level' => $newLevel, 'class_id' => $classId];
 
         if ($heroData) {
             $newLevel = (int)$heroData['current_level'];
@@ -143,15 +152,24 @@ class ChapterController
                         'hero' => $hero
                     ));
 
-                    // Set session notification
+                    // Fetch new stats and compute actual gains (fallback to bonus values if provided)
+                    $getNewStats = $bdd->prepare("SELECT pv, mana, strength, initiative FROM Hero WHERE id = :hero");
+                    $getNewStats->execute(['hero' => $hero]);
+                    $newStats = $getNewStats->fetch(PDO::FETCH_ASSOC);
+
+                    $pvGained = max(0, (int)($newStats['pv'] ?? 0) - $oldPv);
+                    $manaGained = max(0, (int)($newStats['mana'] ?? 0) - $oldMana);
+                    $strengthGained = max(0, (int)($newStats['strength'] ?? 0) - $oldStrength);
+                    $initiativeGained = max(0, (int)($newStats['initiative'] ?? 0) - $oldInitiative);
+
                     $_SESSION['level_up_notification'] = array(
                         'hero_id' => $hero,
                         'old_level' => $oldLevel,
                         'new_level' => $newLevel,
-                        'pv_gained' => $bonus['pv_bonus'],
-                        'mana_gained' => $bonus['mana_bonus'],
-                        'strength_gained' => $bonus['strength_bonus'],
-                        'initiative_gained' => $bonus['initiative_bonus']
+                        'pv_gained' => $pvGained,
+                        'mana_gained' => $manaGained,
+                        'strength_gained' => $strengthGained,
+                        'initiative_gained' => $initiativeGained
                     );
                 }
             }
@@ -242,6 +260,48 @@ class ChapterController
         return $timeline;
     }
 
+    public function getHeroStats($heroId)
+    {
+        require_once 'models/Database.php';
+        $bdd = Database::getConnection();
+
+        // Chapters completed
+        $stmt = $bdd->prepare("SELECT COUNT(*) FROM Hero_Progress WHERE hero_id = :hero AND status = 'COMPLETED'");
+        $stmt->execute(['hero' => $heroId]);
+        $chaptersCompleted = (int)$stmt->fetchColumn();
+
+        // Levels gained (history)
+        $stmt = $bdd->prepare("SELECT COUNT(*) FROM Level_Up_Log WHERE hero_id = :hero");
+        $stmt->execute(['hero' => $heroId]);
+        $levelsGained = (int)$stmt->fetchColumn();
+
+        // Current name, XP and current stats
+        $stmt = $bdd->prepare("SELECT id, name, current_level, xp, pv, mana, strength, initiative FROM Hero WHERE id = :hero");
+        $stmt->execute(['hero' => $heroId]);
+        $heroRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $heroName = $heroRow ? $heroRow['name'] : null;
+        $heroCurrentLevel = $heroRow ? (int)$heroRow['current_level'] : null;
+        $xpCurrent = $heroRow ? (int)$heroRow['xp'] : 0;
+        $pvCurrent = $heroRow ? (int)$heroRow['pv'] : 0;
+        $manaCurrent = $heroRow ? (int)$heroRow['mana'] : 0;
+        $strengthCurrent = $heroRow ? (int)$heroRow['strength'] : 0;
+        $initiativeCurrent = $heroRow ? (int)$heroRow['initiative'] : 0;
+
+        return [
+            'hero_id' => $heroId,
+            'hero_name' => $heroName,
+            'hero_level' => $heroCurrentLevel,
+            'chapters_completed' => $chaptersCompleted,
+            'levels_gained' => $levelsGained,
+            'xp_current' => $xpCurrent,
+            'pv' => $pvCurrent,
+            'mana' => $manaCurrent,
+            'strength' => $strengthCurrent,
+            'initiative' => $initiativeCurrent
+        ];
+    }
+
     public function getLeaderboard($limit = 10)
     {
         require_once 'models/Database.php';
@@ -287,6 +347,7 @@ class ChapterController
         session_start();
         
         $timeline = $this->getProgressionTimeline($heroId);
+        $stats = $this->getHeroStats($heroId);
         require $_SERVER['DOCUMENT_ROOT'] . '/views/progression_timeline.php';
     }
 }

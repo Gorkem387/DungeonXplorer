@@ -104,7 +104,10 @@ h2 {
     position: relative;
 }
 
-.choices a {
+.choices a,
+.choices button,
+.choices .btn,
+.choices .btn-modify {
     display: block;
     padding: 1.5rem 2rem;
     background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-darker) 100%);
@@ -118,10 +121,13 @@ h2 {
     text-align: center;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 /* Effet de survol sur les boutons */
-.choices a::before {
+.choices a::before,
+.choices button::before,
+.choices .btn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -132,11 +138,16 @@ h2 {
     transition: left 0.5s ease;
 }
 
-.choices a:hover::before {
+.choices a:hover::before,
+.choices button:hover::before,
+.choices .btn:hover::before {
     left: 100%;
 }
 
-.choices a:hover {
+.choices a:hover,
+.choices button:hover,
+.choices .btn:hover,
+.choices .btn-modify:hover {
     background: linear-gradient(135deg, var(--accent-red-dark) 0%, var(--accent-red) 100%);
     border-color: var(--accent-red-hover);
     transform: translateY(-5px);
@@ -144,8 +155,28 @@ h2 {
     color: #fff;
 }
 
-.choices a:active {
+.choices a:active,
+.choices button:active,
+.choices .btn:active {
     transform: translateY(-2px);
+}
+
+/* Add a small arrow for clarity */
+.choices button::after,
+.choices a::after,
+.choices .btn::after {
+    content: ' →';
+    font-size: 1.1rem;
+    opacity: 0.95;
+    margin-left: 6px;
+}
+
+/* Focus state for accessibility */
+.choices button:focus,
+.choices a:focus,
+.choices .btn:focus {
+    outline: 3px solid rgba(255, 85, 85, 0.2);
+    outline-offset: 3px;
 }
 
 /* Fin du chapitre */

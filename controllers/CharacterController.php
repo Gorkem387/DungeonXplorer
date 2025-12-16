@@ -71,4 +71,68 @@ class CharacterController
         require 'views/character/list.php';
     }
 
+    public function delete()
+    {
+        session_start();
+        require_once 'models/Database.php';
+        require_once 'models/Hero.php';
+
+        $bdd = Database::getConnection();
+        $heroModel = new Hero();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /profil');
+            exit();
+        }
+
+        if (!isset($_SESSION['username']) || !isset($_POST['hero_id'])) {
+            $_SESSION['error'] = 'Action non autorisée.';
+            header('Location: /profil');
+            exit();
+        }
+
+        $heroId = (int)$_POST['hero_id'];
+
+        // Verify ownership
+        $stmtUser = $bdd->prepare("SELECT id FROM utilisateur WHERE name = :name");
+        $stmtUser->execute(['name' => $_SESSION['username']]);
+        $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+        $userId = $user ? $user['id'] : null;
+
+        if (!$userId || !$heroModel->belongsToUser($heroId, $userId)) {
+            $_SESSION['error'] = 'Vous ne pouvez pas supprimer ce personnage.';
+            header('Location: /profil');
+            exit();
+        }
+
+        try {
+            $bdd->beginTransaction();
+
+            // Remove related data if exists
+            $stmt = $bdd->prepare("DELETE FROM Inventory WHERE hero_id = :hero");
+            $stmt->execute(['hero' => $heroId]);
+
+            $stmt = $bdd->prepare("DELETE FROM Hero_Progress WHERE hero_id = :hero");
+            $stmt->execute(['hero' => $heroId]);
+
+            $stmt = $bdd->prepare("DELETE FROM Level_Up_Log WHERE hero_id = :hero");
+            $stmt->execute(['hero' => $heroId]);
+
+            // Finally delete hero
+            if (!$heroModel->delete($heroId)) {
+                throw new Exception('Erreur suppression héros');
+            }
+
+            $bdd->commit();
+            $_SESSION['success'] = 'Personnage supprimé avec succès.';
+        } catch (Exception $e) {
+            $bdd->rollBack();
+            error_log('Erreur deletion hero: ' . $e->getMessage());
+            $_SESSION['error'] = 'Une erreur est survenue lors de la suppression.';
+        }
+
+        header('Location: /profil');
+        exit();
+    }
+
 }

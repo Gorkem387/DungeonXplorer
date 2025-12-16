@@ -169,7 +169,21 @@ if (!isset($_SESSION['username'])) {
                 border-left: 4px solid #667eea;
                 border-right: none;
             }
+
+            .progression-grid { display:block }
+            .stats-column { margin-top:20px }
         }
+
+        /* New layout styles for stats */
+        .progression-grid { display:flex; gap:24px; align-items:flex-start }
+        .timeline-column { flex: 1 }
+        .stats-column { width: 280px }
+        .stats-card { background:#fff; padding:16px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.06); color: #111 }
+        .stats-card h3 { margin-top:0; color: #111 }
+        .stats-card ul { list-style:none; padding:0; margin:8px 0 }
+        .stats-card li { margin-bottom:8px; font-size:0.98em }
+        .stats-card .btn-custom { display:inline-block; margin-top:8px; background: var(--accent-red); color: #fff; border-color: var(--accent-red) }
+
     </style>
 </head>
 <body>
@@ -178,32 +192,52 @@ if (!isset($_SESSION['username'])) {
     <div class="progression-container">
         <h1 class="progression-title">📈 Chronologie de Progression</h1>
 
-        <?php if (empty($timeline)): ?>
-            <div class="empty-message">
-                <p>Aucune montée de niveau enregistrée. Progressez dans le jeu pour voir votre historique!</p>
-            </div>
-        <?php else: ?>
-            <div class="timeline">
-                <?php foreach ($timeline as $entry): ?>
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-content">
-                            <div class="level-up-badge">⭐ MONTÉE DE NIVEAU</div>
-                            <div class="level-info">
-                                Niveau <span class="old-level"><?php echo $entry['old_level']; ?></span>
-                                <span style="color: #999;">→</span>
-                                Niveau <span class="new-level"><?php echo $entry['new_level']; ?></span>
-                            </div>
-                            <div class="timeline-date">
-                                📅 <?php echo date('d/m/Y à H:i', strtotime($entry['level_up_date'])); ?>
-                            </div>
-                        </div>
+        <div class="progression-grid">
+            <div class="timeline-column">
+                <?php if (empty($timeline)): ?>
+                    <div class="empty-message">
+                        <p>Aucune montée de niveau enregistrée. Progressez dans le jeu pour voir votre historique!</p>
                     </div>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+                <?php else: ?>
+                    <div class="timeline">
+                        <?php foreach ($timeline as $entry): ?>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="level-up-badge">⭐ MONTÉE DE NIVEAU</div>
+                                    <div class="level-info">
+                                        Niveau <span class="old-level"><?php echo $entry['old_level']; ?></span>
+                                        <span style="color: #999;">→</span>
+                                        Niveau <span class="new-level"><?php echo $entry['new_level']; ?></span>
+                                    </div>
+                                    <div class="timeline-date">
+                                        📅 <?php echo date('d/m/Y à H:i', strtotime($entry['level_up_date'])); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
 
-        <a href="/profil" class="back-button">← Retour au Profil</a>
+                <a href="/profil" class="back-button">← Retour au Profil</a>
+            </div>
+
+            <aside class="stats-column">
+                <div class="stats-card">
+                    <h3>📊 Statistiques — <?php echo htmlspecialchars($stats['hero_name'] ?? 'Héros'); ?> <small style="font-size:0.85em;color:#666">(Lvl <?php echo htmlspecialchars($stats['hero_level'] ?? '-'); ?>)</small></h3>
+                    <ul>
+                        <li>🏁 Chapitres complétés : <strong><?php echo htmlspecialchars($stats['chapters_completed']); ?></strong></li>
+                        <li>⭐ Montées de niveau : <strong><?php echo htmlspecialchars($stats['levels_gained']); ?></strong></li>
+                        <li>🎯 XP actuelle : <strong><?php echo htmlspecialchars($stats['xp_current']); ?></strong></li>
+                        <li>❤️ PV : <strong><?php echo htmlspecialchars($stats['pv']); ?></strong></li>
+                        <li>🔵 Mana : <strong><?php echo htmlspecialchars($stats['mana']); ?></strong></li>
+                        <li>💪 Force : <strong><?php echo htmlspecialchars($stats['strength']); ?></strong></li>
+                        <li>⚡ Initiative : <strong><?php echo htmlspecialchars($stats['initiative']); ?></strong></li>
+                    </ul>
+                    <a href="/profile/stats" class="btn-custom">Voir plus de statistiques</a>
+                </div>
+            </aside>
+        </div>
     </div>
 
     <?php require 'layouts/footer.php'; ?>

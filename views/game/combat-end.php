@@ -27,7 +27,6 @@
         <div><strong>Montée de niveau !</strong> Votre héros est passé du niveau <b><?php echo htmlspecialchars($lvl['old_level']); ?></b> au niveau <b><?php echo htmlspecialchars($lvl['new_level']); ?></b>.</div>
         <div class="stats">+<?php echo htmlspecialchars($lvl['pv_gained']); ?> PV, +<?php echo htmlspecialchars($lvl['mana_gained']); ?> Mana, +<?php echo htmlspecialchars($lvl['strength_gained']); ?> Force, +<?php echo htmlspecialchars($lvl['initiative_gained']); ?> Initiative</div>
     </div>
-    <div><a href="/timeline/<?php echo htmlspecialchars($lvl['hero_id']); ?>" class="btn-custom" style="background:rgba(255,255,255,0.12);color:#fff;padding:8px 12px;border-radius:6px;text-decoration:none">Voir l'historique</a></div>
 </div>
 <?php unset($_SESSION['level_up_notification']); endif; ?>
 <div class="combat-end-screen">

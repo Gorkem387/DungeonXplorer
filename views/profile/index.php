@@ -23,6 +23,13 @@
 <body class="profil">
     <h1>Mon profil</h1>
 
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success" role="alert"><?php echo htmlspecialchars($_SESSION['success']); ?></div>
+        <?php unset($_SESSION['success']); endif; ?>
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger" role="alert"><?php echo htmlspecialchars($_SESSION['error']); ?></div>
+        <?php unset($_SESSION['error']); endif; ?>
+
     <h2>Liste de mes personnages</h2>
 
     <div class="card-container">
@@ -41,6 +48,12 @@
                 <a href="/timeline/<?= $hero['id'] ?>" class="btn-custom" style="text-align:center;text-decoration:none;display:block;margin:0;">
                     <i class="fa-solid fa-chart-line"></i> Ma Progression
                 </a>
+                <form method="POST" action="/hero/delete" style="margin:0;margin-top:8px;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce personnage ? Cette action est irréversible.')">
+                    <input type="hidden" name="hero_id" value="<?= $hero['id'] ?>">
+                    <button type="submit" class="btn-custom btn-delete" style="width:100%;margin:0;background:#ef4444;color:#fff;border:none;">
+                        <i class="fa-solid fa-user-minus"></i> Supprimer personnage
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -65,7 +78,6 @@
     <a href="/leaderboard" class="btn-custom">
         <i class="fa-solid fa-trophy"></i> Classement des Héros
     </a>
-    <button id ="btnRemoveChar" class="btn-custom"><i class="fa-solid fa-user-minus"></i> Supprimer personnage</button>
     </div>
 
 

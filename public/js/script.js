@@ -5,10 +5,23 @@ const btnFermerInfo = document.getElementById('btnFermerInfo');
 const info = document.getElementById('info');
 const infoContent = document.getElementById('cadre-info');
 
-btnVoirDetails.addEventListener('click', function() {
-    info.classList.add('active');
-    document.body.style.overflow='hidden';
-});
+if (btnVoirDetails) {
+    btnVoirDetails.addEventListener('click', function() {
+        if (info) {
+            info.classList.add('active');
+            document.body.style.overflow='hidden';
+        }
+    });
+}
+
+if (btnFermerInfo) {
+    btnFermerInfo.addEventListener('click', function(event) {
+        if (info) {
+            info.classList.remove('active');
+            document.body.style.overflow='auto';
+        }
+    });
+}
 
 function openInfo(characterId){
     fetch(`/getCharacterDetails?id=${characterId}`)

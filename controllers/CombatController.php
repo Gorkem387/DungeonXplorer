@@ -392,34 +392,43 @@ class CombatController
             $getOldLevel->execute(['id' => $hero['id']]);
             $oldLevelData = $getOldLevel->fetch(PDO::FETCH_ASSOC);
             $oldLevel = $oldLevelData['current_level'];
+
+            // Get old stats to compute actual gained values later
+            $getOldStats = $bdd->prepare("SELECT pv, mana, strength, initiative FROM Hero WHERE id = :id");
+            $getOldStats->execute(['id' => $hero['id']]);
+            $oldStats = $getOldStats->fetch(PDO::FETCH_ASSOC);
+            $oldPv = (int)($oldStats['pv'] ?? 0);
+            $oldMana = (int)($oldStats['mana'] ?? 0);
+            $oldStrength = (int)($oldStats['strength'] ?? 0);
+            $oldInitiative = (int)($oldStats['initiative'] ?? 0);
             
             // Update XP
             $updateXp = $bdd->prepare("UPDATE Hero SET xp = xp + :xp WHERE id = :id");
             $updateXp->execute(['xp' => $monster['xp'], 'id' => $hero['id']]);
             
-            // Update level based on XP
-            $updateLevel = $bdd->prepare("
-                UPDATE Hero SET current_level = CASE 
-                    WHEN xp >= 2700 THEN 10
-                    WHEN xp >= 2200 THEN 9
-                    WHEN xp >= 1750 THEN 8
-                    WHEN xp >= 1350 THEN 7
-                    WHEN xp >= 1000 THEN 6
-                    WHEN xp >= 700 THEN 5
-                    WHEN xp >= 450 THEN 4
-                    WHEN xp >= 250 THEN 3
-                    WHEN xp >= 100 THEN 2
-                    ELSE 1
-                END 
-                WHERE id = :id
-            ");
-            $updateLevel->execute(['id' => $hero['id']]);
+            // Level computed via Level table (required_xp)
+            // Level computation moved to Level table lookup (required_xp)
             
             // Get new level
-            $getNewLevel = $bdd->prepare("SELECT current_level, class_id FROM Hero WHERE id = :id");
-            $getNewLevel->execute(['id' => $hero['id']]);
-            $newLevelData = $getNewLevel->fetch(PDO::FETCH_ASSOC);
-            $newLevel = $newLevelData['current_level'];
+            // Determine new level based on the Level table (class-specific required_xp)
+            $getXpAndClass = $bdd->prepare("SELECT xp, class_id FROM Hero WHERE id = :id");
+            $getXpAndClass->execute(['id' => $hero['id']]);
+            $heroRow = $getXpAndClass->fetch(PDO::FETCH_ASSOC);
+            if ($heroRow) {
+                $xp = (int)$heroRow['xp'];
+                $classId = $heroRow['class_id'];
+
+                $getLevel = $bdd->prepare("SELECT level FROM `Level` WHERE class_id = :class_id AND required_xp <= :xp ORDER BY level DESC LIMIT 1");
+                $getLevel->execute(['class_id' => $classId, 'xp' => $xp]);
+                $levelRow = $getLevel->fetch(PDO::FETCH_ASSOC);
+                $newLevel = $levelRow ? (int)$levelRow['level'] : 1;
+
+                $updateLevel = $bdd->prepare("UPDATE Hero SET current_level = :level WHERE id = :id");
+                $updateLevel->execute(['level' => $newLevel, 'id' => $hero['id']]);
+            } else {
+                $newLevel = 1;
+                $classId = null;
+            }
             
             // If leveled up, log it and apply bonuses
             if ($newLevel > $oldLevel) {
@@ -439,7 +448,7 @@ class CombatController
                     FROM Level 
                     WHERE class_id = :class_id AND level = :level
                 ");
-                $getBonus->execute(['class_id' => $newLevelData['class_id'], 'level' => $newLevel]);
+                $getBonus->execute(['class_id' => $classId, 'level' => $newLevel]);
                 $bonus = $getBonus->fetch(PDO::FETCH_ASSOC);
                 
                 if ($bonus) {
@@ -460,15 +469,25 @@ class CombatController
                     ]);
                 }
                 
+                // Fetch new stats and compute actual gains (fallback to bonus values if provided)
+                $getNewStats = $bdd->prepare("SELECT pv, mana, strength, initiative FROM Hero WHERE id = :id");
+                $getNewStats->execute(['id' => $hero['id']]);
+                $newStats = $getNewStats->fetch(PDO::FETCH_ASSOC);
+
+                $pvGained = max(0, (int)($newStats['pv'] ?? 0) - $oldPv);
+                $manaGained = max(0, (int)($newStats['mana'] ?? 0) - $oldMana);
+                $strengthGained = max(0, (int)($newStats['strength'] ?? 0) - $oldStrength);
+                $initiativeGained = max(0, (int)($newStats['initiative'] ?? 0) - $oldInitiative);
+                
                 // Store notification in session
                 $_SESSION['level_up_notification'] = [
                     'hero_id' => $hero['id'],
                     'old_level' => $oldLevel,
                     'new_level' => $newLevel,
-                    'pv_gained' => $bonus['pv_bonus'] ?? 0,
-                    'mana_gained' => $bonus['mana_bonus'] ?? 0,
-                    'strength_gained' => $bonus['strength_bonus'] ?? 0,
-                    'initiative_gained' => $bonus['initiative_bonus'] ?? 0
+                    'pv_gained' => $pvGained,
+                    'mana_gained' => $manaGained,
+                    'strength_gained' => $strengthGained,
+                    'initiative_gained' => $initiativeGained
                 ];
             }
             
