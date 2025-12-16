@@ -93,13 +93,12 @@ class CharacterController
 
         $heroId = (int)$_POST['hero_id'];
 
-        // Verify ownership
         $stmtUser = $bdd->prepare("SELECT id FROM utilisateur WHERE name = :name");
         $stmtUser->execute(['name' => $_SESSION['username']]);
         $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
         $userId = $user ? $user['id'] : null;
 
-        if (!$userId || !$heroModel->belongsToUser($heroId, $userId)) {
+        if ($userId === null|| !$heroModel->belongsToUser($heroId, $userId)) {
             $_SESSION['error'] = 'Vous ne pouvez pas supprimer ce personnage.';
             header('Location: /profil');
             exit();
@@ -108,7 +107,6 @@ class CharacterController
         try {
             $bdd->beginTransaction();
 
-            // Remove related data if exists
             $stmt = $bdd->prepare("DELETE FROM Inventory WHERE hero_id = :hero");
             $stmt->execute(['hero' => $heroId]);
 
@@ -118,7 +116,6 @@ class CharacterController
             $stmt = $bdd->prepare("DELETE FROM Level_Up_Log WHERE hero_id = :hero");
             $stmt->execute(['hero' => $heroId]);
 
-            // Finally delete hero
             if (!$heroModel->delete($heroId)) {
                 throw new Exception('Erreur suppression héros');
             }

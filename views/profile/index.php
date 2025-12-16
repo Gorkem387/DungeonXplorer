@@ -64,7 +64,7 @@
     <div id="info" class="info-perso">
         <div class="info-perso-contenu">
             <button id="btnFermerInfo" class="info-perso-fermer">&times;</button>
-            <h3 class="info-perso-titre">Détails du hero</h3>
+            <h3 class="info-perso-titre">Détails du héros</h3>
                 <div class="cadre-info">
                     
                 </div>
@@ -73,10 +73,7 @@
     
     <div class="btnAddChar">
     <a href="/hero" class="btn-custom">
-        <i class="fa-solid fa-user-plus"></i> Créer un hero
-    </a>
-    <a href="/leaderboard" class="btn-custom">
-        <i class="fa-solid fa-trophy"></i> Classement des Héros
+        <i class="fa-solid fa-user-plus"></i> Créer un héros
     </a>
     </div>
 

@@ -41,7 +41,7 @@
     <div class="chapter-container">
         <h1><?php echo htmlspecialchars($chapter->getTitle()); ?></h1>
         
-        <?php if ($chapter->getImage()): ?> 
+        <?php if ($chapter->getImage()): ?>
             <img src="/public/img/<?php echo htmlspecialchars($chapter->getImage()); ?>" 
                  alt="<?php echo htmlspecialchars($chapter->getTitle()); ?>">
         <?php endif; ?>

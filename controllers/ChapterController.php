@@ -30,6 +30,7 @@ class ChapterController
         
         if ($hasEncounter) {
             $encounter = Chapter::getEncounterWithMonster($id);
+            $_SESSION['encounter_monster_id'] = $encounter['monster_id'];
             
             if (!isset($_SESSION['current_hero_id'])) {
                 $_SESSION['error'] = "Veuillez sélectionner un héros avant de commencer un combat.";
@@ -65,20 +66,18 @@ class ChapterController
             'chapter' => $currentChapterId
         ));
 
-        $chapterXpReward = 100;
+        $chapterXpReward = 20;
         $updateXp = $bdd->prepare("UPDATE Hero SET xp = xp + :xp WHERE id = :hero");
         $updateXp->execute(array(
             'xp' => $chapterXpReward,
             'hero' => $hero
         ));
 
-        // Get old level before applying XP/level changes
         $getOldLevel = $bdd->prepare("SELECT current_level FROM Hero WHERE id = :hero");
         $getOldLevel->execute(array('hero' => $hero));
         $oldLevelRow = $getOldLevel->fetch(PDO::FETCH_ASSOC);
         $oldLevel = $oldLevelRow ? (int)$oldLevelRow['current_level'] : 0;
 
-        // Get old stats to compute gains later
         $getOldStats = $bdd->prepare("SELECT pv, mana, strength, initiative FROM Hero WHERE id = :hero");
         $getOldStats->execute(['hero' => $hero]);
         $oldStats = $getOldStats->fetch(PDO::FETCH_ASSOC);
@@ -87,7 +86,6 @@ class ChapterController
         $oldStrength = (int)($oldStats['strength'] ?? 0);
         $oldInitiative = (int)($oldStats['initiative'] ?? 0);
 
-        // Determine new level based on the Level table (class-specific required_xp)
         $getXpAndClass = $bdd->prepare("SELECT xp, class_id FROM Hero WHERE id = :hero");
         $getXpAndClass->execute(['hero' => $hero]);
         $heroRow = $getXpAndClass->fetch(PDO::FETCH_ASSOC);
@@ -113,9 +111,7 @@ class ChapterController
             $newLevel = (int)$heroData['current_level'];
             $classId = $heroData['class_id'];
 
-            // If leveled up, log and apply bonuses
             if ($newLevel > $oldLevel) {
-                // Insert level up log
                 $insertNotif = $bdd->prepare("
                     INSERT INTO Level_Up_Log (hero_id, old_level, new_level, level_up_date)
                     VALUES (:hero_id, :old_level, :new_level, NOW())
@@ -126,7 +122,6 @@ class ChapterController
                     'new_level' => $newLevel
                 ));
 
-                // Get bonuses from Level table
                 $getBonus = $bdd->prepare("
                     SELECT pv_bonus, mana_bonus, strength_bonus, initiative_bonus 
                     FROM Level 
@@ -152,7 +147,6 @@ class ChapterController
                         'hero' => $hero
                     ));
 
-                    // Fetch new stats and compute actual gains (fallback to bonus values if provided)
                     $getNewStats = $bdd->prepare("SELECT pv, mana, strength, initiative FROM Hero WHERE id = :hero");
                     $getNewStats->execute(['hero' => $hero]);
                     $newStats = $getNewStats->fetch(PDO::FETCH_ASSOC);
@@ -265,17 +259,14 @@ class ChapterController
         require_once 'models/Database.php';
         $bdd = Database::getConnection();
 
-        // Chapters completed
         $stmt = $bdd->prepare("SELECT COUNT(*) FROM Hero_Progress WHERE hero_id = :hero AND status = 'COMPLETED'");
         $stmt->execute(['hero' => $heroId]);
         $chaptersCompleted = (int)$stmt->fetchColumn();
 
-        // Levels gained (history)
         $stmt = $bdd->prepare("SELECT COUNT(*) FROM Level_Up_Log WHERE hero_id = :hero");
         $stmt->execute(['hero' => $heroId]);
         $levelsGained = (int)$stmt->fetchColumn();
 
-        // Current name, XP and current stats
         $stmt = $bdd->prepare("SELECT id, name, current_level, xp, pv, mana, strength, initiative FROM Hero WHERE id = :hero");
         $stmt->execute(['hero' => $heroId]);
         $heroRow = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -308,8 +299,6 @@ class ChapterController
         $bdd = Database::getConnection();
 
         $limit = (int)$limit;
-            // Exclude heroes with empty/null names and coalesce optional fields for safer display
-            // Provide readable defaults for class and username so the view shows meaningful text
             $sql = "SELECT
                     H.id,
                     H.name,
