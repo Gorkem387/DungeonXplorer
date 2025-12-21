@@ -9,12 +9,13 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/public/css/chapter/modifyChapter.css">    
+    <link rel="stylesheet" href="/public/css/item/item.css">    
     <title>Modification d'un chapitre</title>
 </head>
 <body>
@@ -36,6 +37,37 @@
                             <strong>Description actuelle :</strong> <?php echo htmlspecialchars($_SESSION['desc'])?>
                         </div>
                         <input type="text" id="desc" name="desc" placeholder="Entrez une nouvelle description..." value="<?php echo htmlspecialchars($_SESSION['desc'])?>">
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-header">
+                            <div class="section-icon">🔧</div>
+                            <h2>Items</h2>
+                        </div>
+                        <div class="item-list">
+                            <?php
+                            //$items[$link['id']] = [$link['name'], , $link['description']];
+
+                                $itemQuery = $bdd->query("SELECT i.id, i.name, c.quantity, i.item_type, i.max_quantity, i.description FROM Chapter_Item c JOIN Items i ON c.item_id = i.id WHERE chapter_id = ". $_SESSION['id']);
+                                while ($link = $itemQuery->fetch(PDO::FETCH_ASSOC)) {
+                            ?>        
+                            <div class="link-option-card">
+                                <div class="link-card-header">
+                                    <div class="item">
+                                        <img src="/public/img/Items/<?=$link['name']?>.jpg" alt="Image de <?=$link['name']?>" >
+                                        <span class="chapter-badge"><?=$link['name'].' '. $link['quantity'].'/'.$link['max_quantity']?></span>
+                                        <div class="buttons">
+                                            <button type="button" class="plus">+</button>
+                                            <button type="button" class="minus">-</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
+                                }
+                                $itemQuery->closeCursor();
+                            ?>
+                        </div>
                     </div>
 
                     <div class="form-section">

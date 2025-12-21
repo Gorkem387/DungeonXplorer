@@ -1,0 +1,44 @@
+
+.item-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 12px;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    margin: 15px;
+}
+
+.item img {
+    border-radius: 1vw;
+    box-shadow: 1vw;
+    width: clamp(125px, 12vw, 250px);
+    height: clamp(125px, 12vw, 250px);
+
+}
+
+.item button {
+    width: clamp(25px, 1vw, 50px);
+    height: clamp(25px, 4vw, 50px);
+
+    border-radius: 1vw;
+    color: white;
+    font-size: 2vw;
+
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.plus {
+    background-color: green;
+}
+
+.minus {
+    background-color: red;
+}
