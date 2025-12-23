@@ -38,38 +38,52 @@
                         </div>
                         <input type="text" id="desc" name="desc" placeholder="Entrez une nouvelle description..." value="<?php echo htmlspecialchars($_SESSION['desc'])?>">
                     </div>
-
                     <div class="form-section">
                         <div class="section-header">
-                            <div class="section-icon">🔧</div>
-                            <h2>Items</h2>
+                            <div class="section-icon">🎒</div>
+                            <h2>Items du chapitre</h2>
                         </div>
                         <div class="item-list">
                             <?php
-                            //$items[$link['id']] = [$link['name'], , $link['description']];
-
-                                $itemQuery = $bdd->query("SELECT i.id, i.name, c.quantity, i.item_type, i.max_quantity, i.description FROM Chapter_Item c JOIN Items i ON c.item_id = i.id WHERE chapter_id = ". $_SESSION['id']);
-                                while ($link = $itemQuery->fetch(PDO::FETCH_ASSOC)) {
+                            $allItemsQuery = $bdd->query("SELECT id, name, description, item_type, max_quantity FROM Items");
+                            $allItems = $allItemsQuery->fetchAll(PDO::FETCH_ASSOC);
+                            
+                            $chapterItemsQuery = $bdd->prepare("SELECT item_id, quantity FROM Chapter_Item WHERE chapter_id = ?");
+                            $chapterItemsQuery->execute([$_SESSION['id']]);
+                            $chapterItems = [];
+                            while ($row = $chapterItemsQuery->fetch(PDO::FETCH_ASSOC)) {
+                                $chapterItems[$row['item_id']] = $row['quantity'];
+                            }
+                            foreach ($allItems as $item) {
+                                $currentQuantity = isset($chapterItems[$item['id']]) ? $chapterItems[$item['id']] : 0;
                             ?>        
-                            <div class="link-option-card">
-                                <div class="link-card-header">
-                                    <div class="item">
-                                        <img src="/public/img/Items/<?=$link['name']?>.jpg" alt="Image de <?=$link['name']?>" >
-                                        <span class="chapter-badge"><?=$link['name'].' '. $link['quantity'].'/'.$link['max_quantity']?></span>
-                                        <div class="buttons">
-                                            <button type="button" class="plus">+</button>
-                                            <button type="button" class="minus">-</button>
-                                        </div>
-                                    </div>
+                            <div class="item-card">
+                                <div class="item-image-container">
+                                    <img src="/public/img/Items/<?= htmlspecialchars($item['name']) ?>.jpg" 
+                                         alt="Image de <?= htmlspecialchars($item['name']) ?>"
+                                         onerror="this.src='/public/img/Items/default.jpg'">
+                                </div>
+                                <div class="item-info">
+                                    <span class="item-name"><?= htmlspecialchars($item['name']) ?></span>
+                                    <span class="item-type"><?= htmlspecialchars($item['item_type']) ?></span>
+                                </div>
+                                <div class="item-quantity">
+                                    <label for="item-<?= $item['id'] ?>">Quantité:</label>
+                                    <input type="number" 
+                                           id="item-<?= $item['id'] ?>" 
+                                           name="items[<?= $item['id'] ?>]" 
+                                           min="0" 
+                                           max="<?= $item['max_quantity'] ?>" 
+                                           value="<?= $currentQuantity ?>"
+                                           class="quantity-input">
+                                    <span class="max-quantity">/ <?= $item['max_quantity'] ?></span>
                                 </div>
                             </div>
                             <?php
-                                }
-                                $itemQuery->closeCursor();
+                            }
                             ?>
                         </div>
                     </div>
-
                     <div class="form-section">
                         <div class="section-header">
                             <div class="section-icon">⬅️</div>
@@ -89,20 +103,20 @@
                                 $cardClass = isset($currentPrev[$row['id']]) ? 'selected' : '';
                                 $linkName = isset($currentPrev[$row['id']]) ? $currentPrev[$row['id']] : '';
                             ?>
-                                <div class="link-option-card <?= $cardClass ?>">
-                                    <div class="link-card-header">
-                                        <input type="checkbox" 
-                                               id="precedent-<?= $row['id'] ?>" 
-                                               name="precedent[<?= $row['id'] ?>][selected]" 
-                                               value="<?= $row['id'] ?>"
-                                               <?= $isChecked ?>>
-                                        <span class="chapter-badge">Chapitre <?= $row['id'] ?></span>
+                            <div class="link-option-card <?= $cardClass ?>">
+                                <div class="link-card-header">
+                                    <input type="checkbox" 
+                                        id="precedent-<?= $row['id'] ?>" 
+                                        name="precedent[<?= $row['id'] ?>][selected]" 
+                                        value="<?= $row['id'] ?>"
+                                        <?= $isChecked ?>>
+                                    <span class="chapter-badge">Chapitre <?= $row['id'] ?></span>
                                     </div>
                                     <input type="text" 
-                                           name="precedent[<?= $row['id'] ?>][name]" 
-                                           placeholder="Nom du lien..." 
-                                           class="link-name-input"
-                                           value="<?= htmlspecialchars($linkName) ?>">
+                                        name="precedent[<?= $row['id'] ?>][name]" 
+                                        placeholder="Nom du lien..." 
+                                        class="link-name-input"
+                                        value="<?= htmlspecialchars($linkName) ?>">
                                 </div>
                             <?php
                             }
@@ -158,6 +172,32 @@
                 </form>
             </div>
         </div>
+        <div id="itemModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <h2 class="modal-title">Ajouter un item</h2>
+                <div class="available-items" id="availableItems">
+                    <?php
+                        $allItemsQuery = $bdd->query("SELECT i.id, i.name, i.max_quantity FROM Items i WHERE i.id NOT IN (SELECT item_id FROM Chapter_Item WHERE chapter_id = " . $_SESSION['id'] . ")");
+                        $hasItems = false;
+                        while ($item = $allItemsQuery->fetch(PDO::FETCH_ASSOC)) {
+                            $hasItems = true;
+                    ?>
+                        <div class="available-item" data-item-id="<?=$item['id']?>" data-item-name="<?=htmlspecialchars($item['name'])?>" data-max-quantity="<?=$item['max_quantity']?>">
+                            <img src="/public/img/Items/<?=$item['name']?>.jpg" alt="<?=$item['name']?>">
+                            <div class="available-item-name"><?=$item['name']?></div>
+                            <button onclick="addItemToChapter(this)">Ajouter</button>
+                        </div>
+                    <?php
+                        }
+                        if (!$hasItems) {
+                            echo '<div class="no-items-message">Tous les items sont déjà dans ce chapitre</div>';
+                        }
+                        $allItemsQuery->closeCursor();
+                    ?>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -171,6 +211,97 @@
                 }
             });
         });
+
+        function changeQuantity(button, delta) {
+            const itemCard = button.closest('.item-card');
+            const quantityDisplay = itemCard.querySelector('.quantity-display');
+            const hiddenInput = itemCard.querySelector('.item-quantity-input');
+            const maxQuantity = parseInt(itemCard.dataset.maxQuantity);
+            
+            let currentQuantity = parseInt(hiddenInput.value);
+            let newQuantity = currentQuantity + delta;
+            
+            // Vérifier les limites
+            if (newQuantity < 0) newQuantity = 0;
+            if (newQuantity > maxQuantity) newQuantity = maxQuantity;
+            
+            // Si la quantité atteint 0, supprimer la carte
+            if (newQuantity === 0) {
+                itemCard.style.animation = 'fadeOut 0.3s';
+                setTimeout(() => {
+                    itemCard.remove();
+                    // Rendre l'item disponible dans le modal
+                    updateAvailableItems();
+                }, 300);
+            } else {
+                // Mettre à jour l'affichage
+                if (quantityDisplay) {
+                    quantityDisplay.textContent = newQuantity + '/' + maxQuantity;
+                }
+                hiddenInput.value = newQuantity;
+            }
+        }
+
+        function openModal() {
+            document.getElementById('itemModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('itemModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('itemModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        function addItemToChapter(button) {
+            const availableItem = button.closest('.available-item');
+            const itemId = availableItem.dataset.itemId;
+            const itemName = availableItem.dataset.itemName;
+            const maxQuantity = parseInt(availableItem.dataset.maxQuantity);
+            
+            const itemList = document.getElementById('itemList');
+            const newCard = document.createElement('div');
+            newCard.className = 'item-card';
+            newCard.dataset.itemId = itemId;
+            newCard.dataset.originalQuantity = '0';
+            newCard.dataset.maxQuantity = maxQuantity;
+            newCard.style.animation = 'fadeIn 0.3s';
+            
+            const showQuantity = maxQuantity > 1;
+            const initialQuantity = showQuantity ? 1 : 1;
+            
+            newCard.innerHTML = `
+                <img src="/public/img/Items/${itemName}.jpg" alt="Image de ${itemName}">
+                <div class="item-name">${itemName}</div>
+                ${showQuantity ? `
+                <div class="item-quantity">
+                    <button type="button" class="minus" onclick="changeQuantity(this, -1)">-</button>
+                    <span class="quantity-display">${initialQuantity}/${maxQuantity}</span>
+                    <button type="button" class="plus" onclick="changeQuantity(this, 1)">+</button>
+                </div>
+                ` : ''}
+                <input type="hidden" name="items[${itemId}]" value="${initialQuantity}" class="item-quantity-input">
+            `;
+            
+            itemList.appendChild(newCard);
+            
+            availableItem.style.animation = 'fadeOut 0.3s';
+            setTimeout(() => {
+                availableItem.remove();
+                
+                const remainingItems = document.querySelectorAll('.available-item');
+                if (remainingItems.length === 0) {
+                    document.getElementById('availableItems').innerHTML = '<div class="no-items-message">Tous les items sont déjà dans ce chapitre</div>';
+                }
+            }, 300);
+        }
+
+
+
     </script>
 </body>
 </html>

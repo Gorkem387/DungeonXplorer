@@ -89,7 +89,7 @@ class AdminController
     $bdd = Database::getConnection();
     
     $chapterId = $_SESSION['id'];
-    $desc = htmlspecialchars($_POST['desc']);
+    $desc = htmlspecialchars($_POST['desc'], ENT_NOQUOTES, 'UTF-8');
     
     $update = 'UPDATE Chapter SET content = :desc WHERE id = :id';
     $req = $bdd->prepare($update);
@@ -110,12 +110,42 @@ class AdminController
                 $reqLink->execute(array(
                     'chapter_id' => $targetChapterId,
                     'next_chapter_id' => $chapterId,
-                    'description' => htmlspecialchars($linkData['name'])
+                    'description' => htmlspecialchars($linkData['name'], ENT_NOQUOTES, 'UTF-8')
                 ));
             }
         }
     }
     
+    if (isset($_POST['items']) && is_array($_POST['items'])) {
+        $currentItemsQuery = $bdd->prepare("SELECT item_id, quantity FROM Chapter_Item WHERE chapter_id = ?");
+        $currentItemsQuery->execute([$chapterId]);
+        $currentItems = [];
+        while ($row = $currentItemsQuery->fetch(PDO::FETCH_ASSOC)) {
+            $currentItems[$row['item_id']] = $row['quantity'];
+        }
+        
+        foreach ($_POST['items'] as $itemId => $newQuantity) {
+            $newQuantity = (int)$newQuantity;
+            $itemId = (int)$itemId;
+            
+            $wasInChapter = isset($currentItems[$itemId]);
+            $oldQuantity = $wasInChapter ? $currentItems[$itemId] : 0;
+            
+            if ($oldQuantity > 0 && $newQuantity == 0) {
+                $deleteStmt = $bdd->prepare("DELETE FROM Chapter_Item WHERE chapter_id = ? AND item_id = ?");
+                $deleteStmt->execute([$chapterId, $itemId]);
+                
+            } elseif ($oldQuantity == 0 && $newQuantity > 0) {
+                $insertStmt = $bdd->prepare("INSERT INTO Chapter_Item (chapter_id, item_id, quantity) VALUES (?, ?, ?)");
+                $insertStmt->execute([$chapterId, $itemId, $newQuantity]);
+                
+            } elseif ($wasInChapter && $newQuantity > 0 && $oldQuantity != $newQuantity) {
+                $updateStmt = $bdd->prepare("UPDATE Chapter_Item SET quantity = ? WHERE chapter_id = ? AND item_id = ?");
+                $updateStmt->execute([$newQuantity, $chapterId, $itemId]);
+            }
+        }
+    }
+
     if (isset($_POST['prochain'])) {
         foreach ($_POST['prochain'] as $targetChapterId => $linkData) {
             if (isset($linkData['selected']) && !empty($linkData['name'])) {
