@@ -107,5 +107,115 @@
     }
 }
 
-
-
+.inventory-section {
+    margin-bottom: 1.5rem;
+}
+.inventory-section-title {
+    font-size: 1.2rem;
+    color: #c41e1e;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #333;
+}
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+}
+.inventory-item-card {
+    background: linear-gradient(145deg, #1a1a1a 0%, #151515 100%);
+    border: 2px solid #333;
+    border-radius: 10px;
+    padding: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.inventory-item-card:hover {
+    border-color: #c41e1e;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(196, 30, 30, 0.3);
+}
+.inventory-item-card.equipped {
+    border-color: #22c55e;
+    background: linear-gradient(145deg, #1a2a1a 0%, #152015 100%);
+}
+.inventory-item-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.inventory-item-card.disabled:hover {
+    border-color: #333;
+    transform: none;
+    box-shadow: none;
+}
+.item-image {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.item-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #e0e0e0;
+    margin-bottom: 0.3rem;
+    text-align: center;
+}
+.item-quantity {
+    text-align: center;
+    color: #9a9a9a;
+    font-size: 0.85rem;
+}
+.item-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #22c55e;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.empty-inventory {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+}
+.item-tooltip {
+    position: absolute;
+    bottom: 105%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.95);
+    color: #e0e0e0;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border: 1px solid #c41e1e;
+    min-width: 200px;
+}
+.inventory-item-card:hover .item-tooltip {
+    opacity: 1;
+}
+.tooltip-desc {
+    color: #aaa;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+.tooltip-stats {
+    color: #22c55e;
+    font-weight: 600;
+}
