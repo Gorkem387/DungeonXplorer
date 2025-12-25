@@ -1,6 +1,5 @@
 <?php
 require_once 'models/Chapter.php';
-require_once 'models/Encounter.php';
 
 class ChapterController
 {
