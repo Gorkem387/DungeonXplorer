@@ -238,6 +238,14 @@ class Inventory
         return (int) $stmt->fetchColumn();
     }
 
+    public static function consumeItem($heroId, $itemId, $quantity = 1) {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("UPDATE Inventory SET quantity = quantity - ? WHERE hero_id = ? AND item_id = ?");
+        $stmt->execute([$quantity, $heroId, $itemId]);
+        $stmt = $db->prepare("DELETE FROM Inventory WHERE hero_id = ? AND item_id = ? AND quantity <= 0");
+        $stmt->execute([$heroId, $itemId]);
+    }
+
     public function getId()
     {
         return $this->id;

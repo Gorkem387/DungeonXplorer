@@ -262,68 +262,72 @@ function openInventoryModal() {
 }
 
 function renderInventory(items, container) {
-    if (items.length === 0) {
-        container.innerHTML = '<p style="text-align: center; padding: 20px;">Votre sac est vide.</p>';
+    if (!items || items.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:20px;">Inventaire vide</p>';
         return;
     }
 
     let html = '<div class="inventory-list">';
     items.forEach(item => {
-        const imagePath = item.image ? `/public/img/Items/${item.image}` : '/public/img/Items/Casque.jpg';
-        const name = item.name || `Objet #${item.item_id}`;
-        const desc = item.description || "Aucune description disponible.";
+        const type = parseInt(item.item_type);
+        const isEquipable = (type >= 1 && type <= 4);
+        const actionLabel = isEquipable ? 'Équiper' : 'Utiliser';
+        const actionType = isEquipable ? 'equip' : 'use';
 
         html += `
             <div class="inventory-item">
-                <img src="${imagePath}" class="item-icon" alt="${name}">
+                <img src="/public/img/Items/${item.image || 'default.png'}" class="item-icon">
                 <div class="item-info">
-                    <strong>${name} (x${item.quantity})</strong>
-                    <p class="item-description">${desc}</p>
+                    <strong>${item.name} (x${item.quantity})</strong>
+                    <p class="item-description">${item.description || ''}</p>
                 </div>
-                <button class="use-item-btn" onclick="useItem(${item.item_id}, 'use')">
-                    Utiliser
+                <button class="use-item-btn" onclick="useItem(${item.item_id}, '${actionType}')">
+                    ${actionLabel}
                 </button>
-            </div>
-        `;
+            </div>`;
     });
     html += '</div>';
     container.innerHTML = html;
 }
 
-function closeInventoryModal() {
-    document.getElementById('inventory-modal').style.display = 'none';
-}
-
 function useItem(itemId, action) {
-    closeInventoryModal();
-    
     const formData = new FormData();
     formData.append('action', 'use_item');
     formData.append('item_id', itemId);
     formData.append('item_action', action);
-    
-    fetch('/combat/action', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            displayCombatLog(data.actions);
-            
-            if (data.combat_ended) {
-                setTimeout(() => {
-                    window.location.href = '/combat/end';
-                }, 2000);
+
+    fetch('/combat/action', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const equip = data.actions.find(a => a.target === 'Équipement');
+                
+                if (equip && equip.slot) {
+                    const slotContainer = document.getElementById(`slot-${equip.slot}`);
+                    if (slotContainer) {
+                        const slotText = slotContainer.querySelector('.slot-name');
+                        if (slotText) {
+                            const itemName = equip.item_name || equip.attack_name.replace('Équipe ', '');
+                            slotText.textContent = itemName;
+                        }
+                        slotContainer.classList.add('active-slot');
+                    }
+                }
+
+                displayActions(data.actions, data.combat_ended, data.redirect);
+                closeInventoryModal();
+            } else {
+                alert(data.error);
             }
-        } else {
-            alert(data.error || 'Erreur lors de l\'utilisation de l\'item');
-        }
-    })
-    .catch(err => {
-        console.error('Erreur:', err);
-        alert('Erreur réseau');
-    });
+        });
+}
+
+function closeInventoryModal() {
+    const modal = document.getElementById('inventory-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        isProcessing = false; 
+    }
 }
 
 window.onclick = function(event) {

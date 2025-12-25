@@ -82,6 +82,19 @@ else{
                     </div>
                     
                 </div>
+                <div class="equipment-slots">
+                    <?php 
+                    $slots = [1 => 'Tête', 2 => 'Torse', 3 => 'Jambes', 4 => 'Arme'];
+                    foreach ($slots as $id => $label): 
+                        $equippedItem = $_SESSION['permanent_equipment'][$id] ?? null;
+                        $activeClass = $equippedItem ? 'active-slot' : '';
+                        $displayName = $equippedItem ? $equippedItem['name'] : 'Vide';
+                    ?>
+                        <div class="slot <?= $activeClass ?>" id="slot-<?= $id ?>">
+                            <?= $label ?>: <span class="slot-name"><?= htmlspecialchars($displayName) ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
             
             <div class="combat-center">
@@ -176,11 +189,8 @@ else{
             <h2>Inventaire de <?= htmlspecialchars($hero['name']) ?></h2>
             <span class="close-btn" onclick="closeInventoryModal()">&times;</span>
         </div>
-        <div class="modal-body">
-            <div id="inventory-content-list" class="inventory-list">
-                <p style="text-align: center; color: #aaa;">Chargement de l'inventaire...</p>
+        <div id="inventory-content-list" class="inventory-list">
             </div>
-        </div>
     </div>
 </div>
 

@@ -5,16 +5,13 @@ class CombatController
     public function start($id = null)
     {
         session_start();
+        
         if ($id !== null) {
             $_SESSION['current_hero_id'] = $id;
         }
         
         if (isset($_POST['chapter_id'])) {
             $_SESSION['chapter_after_combat'] = $_POST['chapter_id'];
-        }
-        
-        if ($id !== null) {
-            $_SESSION['current_hero_id'] = $id;
         }
         
         if (!isset($_SESSION['current_hero_id'])) {
@@ -44,6 +41,10 @@ class CombatController
             die("Aucun monstre trouvé");
         }
 
+        if (!isset($_SESSION['permanent_equipment'])) {
+            $_SESSION['permanent_equipment'] = [1 => null, 2 => null, 3 => null, 4 => null];
+        }
+
         $_SESSION['combat'] = [
             'hero' => $hero,
             'monster' => $monster,
@@ -51,7 +52,8 @@ class CombatController
             'hero_initiative' => rand(1, 6) + $hero['initiative'],
             'monster_initiative' => rand(1, 6) + $monster['initiative'],
             'defending' => false,
-            'equipped_weapon' => null // Aucune arme équipée au début
+            'equipment' => $_SESSION['permanent_equipment'],
+            'equipped_weapon' => $_SESSION['permanent_equipment'][4] ?? null 
         ];
 
         header('Location: /combat/fight');
@@ -167,7 +169,6 @@ class CombatController
         
         $heroId = $_SESSION['current_hero_id'];
         
-        // Récupérer l'item
         $itemQuery = $bdd->prepare("
             SELECT i.*, hi.quantity 
             FROM Items i 
@@ -182,27 +183,39 @@ class CombatController
         }
         
         $log = [];
-        
-        // ÉQUIPER UNE ARME
-        if ($itemAction === 'equip' && $item['damage_multiplier'] > 1.0) {
-            $combat['equipped_weapon'] = $item;
+        $type = (int)$item['item_type'];
+
+        // --- LOGIQUE ÉQUIPEMENT (Slots 1 à 4) ---
+        if ($itemAction === 'equip' || ($type >= 1 && $type <= 4)) {
+            if (!isset($_SESSION['permanent_equipment'])) {
+                $_SESSION['permanent_equipment'] = [1 => null, 2 => null, 3 => null, 4 => null];
+            }
+            // SAUVEGARDE PERSISTANTE
+            $_SESSION['permanent_equipment'][$type] = $item;
+            
+            // MISE À JOUR COMBAT ACTUEL
+            $combat['equipment'][$type] = $item;
+            if ($type === 4) { $combat['equipped_weapon'] = $item; }
+            
             $combat['defending'] = false;
+
             $log[] = [
                 'attacker' => $combat['hero']['name'],
                 'attack_name' => 'Équipe ' . $item['name'],
-                'damage' => 0,
-                'target_pv_left' => $combat['monster']['pv'],
-                'target' => 'Équipement'
+                'target' => 'Équipement',
+                'slot' => $type,
+                'item_name' => $item['name'],
+                'damage' => 0
             ];
             return $log;
         }
         
-        // UTILISER UN CONSOMMABLE
-        if ($itemAction === 'use') {
+        // --- LOGIQUE CONSOMMABLE ---
+        if ($itemAction === 'use' || $type == 10) {
             
-            // POTION DE SOIN
             if ($item['is_heal']) {
-                $maxPv = $this->getMaxPvByClass($combat['hero']['class_id']);
+                // Utiliser le max_pv du héros chargé au début
+                $maxPv = $combat['hero']['max_pv'];
                 $healAmount = min($item['damage'], $maxPv - $combat['hero']['pv']);
                 $combat['hero']['pv'] += $healAmount;
                 
@@ -219,83 +232,22 @@ class CombatController
                 return $log;
             }
             
-            // FLÈCHE (nécessite arc équipé)
+            // Logique Flèches et Poison
             if (stripos($item['name'], 'flèche') !== false) {
                 $equippedWeapon = $combat['equipped_weapon'] ?? null;
-                
                 if (!$equippedWeapon || $equippedWeapon['requires_ammo'] == 0) {
                     return ['error' => 'Vous devez équiper un arc pour tirer une flèche'];
                 }
-                
                 $damage = $this->calculateDamage($combat['hero'], $equippedWeapon);
                 $dodgeChance = 20 + $equippedWeapon['dodge_modifier'];
-                
                 if (rand(1, 100) <= $dodgeChance) {
-                    $log[] = [
-                        'attacker' => $combat['hero']['name'],
-                        'attack_name' => 'Tir de flèche',
-                        'damage' => 0,
-                        'target_pv_left' => $combat['monster']['pv'],
-                        'target' => $combat['monster']['name'],
-                        'message' => 'Le monstre esquive!'
-                    ];
+                    $log[] = ['attacker' => $combat['hero']['name'], 'attack_name' => 'Tir de flèche', 'damage' => 0, 'target_pv_left' => $combat['monster']['pv'], 'target' => $combat['monster']['name'], 'message' => 'Le monstre esquive!'];
                 } else {
-                    $combat['monster']['pv'] -= $damage;
-                    $combat['monster']['pv'] = max(0, $combat['monster']['pv']);
-                    
-                    $log[] = [
-                        'attacker' => $combat['hero']['name'],
-                        'attack_name' => 'Tir de flèche',
-                        'damage' => $damage,
-                        'target_pv_left' => $combat['monster']['pv'],
-                        'target' => $combat['monster']['name']
-                    ];
+                    $combat['monster']['pv'] = max(0, $combat['monster']['pv'] - $damage);
+                    $log[] = ['attacker' => $combat['hero']['name'], 'attack_name' => 'Tir de flèche', 'damage' => $damage, 'target_pv_left' => $combat['monster']['pv'], 'target' => $combat['monster']['name']];
                 }
-                
                 $this->consumeItem($heroId, $itemId, 1);
                 $combat['defending'] = false;
-                return $log;
-            }
-            
-            // FIOLE DE POISON (nécessite arc + flèche)
-            if (stripos($item['name'], 'fiole') !== false || stripos($item['name'], 'poison') !== false) {
-                $equippedWeapon = $combat['equipped_weapon'] ?? null;
-                
-                if (!$equippedWeapon || $equippedWeapon['requires_ammo'] == 0) {
-                    return ['error' => 'Vous devez équiper un arc pour utiliser une fiole de poison'];
-                }
-                
-                // Vérifier si le héros a une flèche
-                $arrowQuery = $bdd->prepare("
-                    SELECT i.id, hi.quantity 
-                    FROM Items i 
-                    JOIN Inventory hi ON i.id = hi.item_id 
-                    WHERE hi.hero_id = ? AND i.name LIKE '%flèche%' OR i.name LIKE '%Flèche%'
-                ");
-                $arrowQuery->execute([$heroId]);
-                $arrow = $arrowQuery->fetch(PDO::FETCH_ASSOC);
-                
-                if (!$arrow || $arrow['quantity'] <= 0) {
-                    return ['error' => 'Vous n\'avez pas de flèche pour utiliser la fiole de poison'];
-                }
-                
-                // Attaque imparable avec dégâts fixes
-                $damage = $item['damage']; // 100 dégâts
-                $combat['monster']['pv'] -= $damage;
-                $combat['monster']['pv'] = max(0, $combat['monster']['pv']);
-                
-                $this->consumeItem($heroId, $itemId, 1); // Consommer la fiole
-                $this->consumeItem($heroId, $arrow['id'], 1); // Consommer une flèche
-                $combat['defending'] = false;
-                
-                $log[] = [
-                    'attacker' => $combat['hero']['name'],
-                    'attack_name' => 'Flèche empoisonnée',
-                    'damage' => $damage,
-                    'target_pv_left' => $combat['monster']['pv'],
-                    'target' => $combat['monster']['name'],
-                    'message' => 'Coup critique! Le poison fait effet!'
-                ];
                 return $log;
             }
         }
@@ -324,11 +276,12 @@ class CombatController
         $deleteQuery->execute([$heroId, $itemId]);
     }
     
-    private function calculateDamage($hero, $weapon)
-    {
-        $baseDamage = $weapon['damage'] + $hero['strength'];
-        $finalDamage = $baseDamage * $weapon['damage_multiplier'];
-        return (int)$finalDamage;
+    private function calculateDamage($hero, $equippedWeapon) {
+        $baseDamage = rand(1, 6) + $hero['strength'];
+        if ($equippedWeapon && isset($equippedWeapon['damage_multiplier'])) {
+            return (int)($baseDamage * $equippedWeapon['damage_multiplier']);
+        }
+        return $baseDamage;
     }
     
     private function getArmorReduction($heroId)
