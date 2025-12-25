@@ -600,37 +600,49 @@ class CombatController
                 $itemId = $loot['item_id'];
                 $quantity = $loot['quantity'];
                 $existingItem = Inventory::hasItem($hero['id'], $itemId);
-                $itemObject = Item::findById($itemId);
                 
-                $itemName = (is_object($itemObject) && method_exists($itemObject, 'getName')) 
-                            ? $itemObject->getName() 
-                            : "Objet Inconnu ({$itemId})";
+                $itemQuery = $bdd->prepare("SELECT name FROM Items WHERE id = ?");
+                $itemQuery->execute([$itemId]);
+                $itemData = $itemQuery->fetch(PDO::FETCH_ASSOC);
+                $itemName = $itemData['name'] ?? "Objet Inconnu ({$itemId})";
                 
                 if (!$existingItem && $currentStacks >= $maxItems) {
                     $lootResults[] = [
                         'name' => $itemName,
                         'quantity' => $quantity,
-                        'status' => 'lost_full',
                         'message' => " (Inventaire plein)"
                     ];
                     continue;
                 }
                 
-                $itemAdded = Inventory::addItem($hero['id'], $itemId, $quantity);
-                
-                if ($itemAdded) {
-                    if (!$existingItem) {
-                        $currentStacks++;
-                    }
-                    
+                if (Inventory::addItem($hero['id'], $itemId, $quantity)) {
+                    if (!$existingItem) $currentStacks++;
                     $lootResults[] = [
                         'name' => $itemName,
                         'quantity' => $quantity,
-                        'status' => 'added',
                         'message' => " (Ajouté)"
                     ];
                 }
-            }       
+            }
+            
+            $resultat['loot_gained'] = $lootResults;
+
+            $newXp = $hero['xp'] + $monster['xp'];
+            $heroModel->update($hero['id'], ['xp' => $newXp]);
+
+        } 
+        else {
+            $resultat = [
+                'winner' => 'monster',
+                'hero_name' => $hero['name'],
+                'monster_name' => $monster['name']
+            ];
+            $heroModel->update($hero['id'], ['pv' => 0]);
         }
+
+        unset($_SESSION['combat']);
+        unset($_SESSION['chapter_after_combat']);
+        
+        require 'views/game/combat-end.php';
     }
 }
