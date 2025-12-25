@@ -247,7 +247,7 @@ function openInventoryModal() {
     const modal = document.getElementById('inventory-modal');
     const contentList = document.getElementById('inventory-content-list');
     
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
     contentList.innerHTML = '<p style="text-align: center; color: #aaa;">Chargement...</p>';
     
     fetch('/combat/inventory')
