@@ -339,4 +339,20 @@ class ChapterController
         $stats = $this->getHeroStats($heroId);
         require $_SERVER['DOCUMENT_ROOT'] . '/views/progression_timeline.php';
     }
+
+    public function collect() {
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
+    
+        if (isset($_SESSION['current_hero_id']) && isset($_POST['chapter_id'])) {
+            $chapterId = (int)$_POST['chapter_id'];
+            $heroId = $_SESSION['current_hero_id'];
+    
+            Chapter::processTreasureCollection($heroId, $chapterId);
+
+            header("Location: /chapter/" . $chapterId);
+            exit;
+        }
+        header("Location: /");
+        exit;
+    }
 }

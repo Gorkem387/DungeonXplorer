@@ -49,6 +49,22 @@
         <div class="content">
             <?php echo nl2br(htmlspecialchars($chapter->getContent())); ?>
         </div>
+
+        <?php 
+        $treasure = Chapter::getTreasure($chapter->getId());
+        $alreadyCollected = Chapter::hasCollectedTreasure($_SESSION['current_hero_id'], $chapter->getId());
+
+        if ($treasure && !$alreadyCollected): ?>
+            <div class="treasure-section" style="margin-top: 20px; text-align: center;">
+                <p>Vous avez trouvé un objet : <strong><?php echo htmlspecialchars($treasure['name']); ?></strong> (x<?php echo $treasure['quantity']; ?>)</p>
+                <form method="POST" action="/chapter/collect">
+                    <input type="hidden" name="chapter_id" value="<?php echo $chapter->getId(); ?>">
+                    <button type="submit" class="btn-custom" style="background-color: #f59e0b;">
+                        <i class="fa-solid fa-gem"></i> Collecter le trésor
+                    </button>
+                </form>
+            </div>
+        <?php endif; ?>
         
         <?php if (isset($encounter) && $encounter): ?>         
             <form method="POST" action="/combat/start/<?php echo $_SESSION['current_hero_id']; ?>" class="combat-start-form">

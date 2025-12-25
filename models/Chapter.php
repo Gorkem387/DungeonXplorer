@@ -105,6 +105,52 @@ class Chapter
         return $result ? $result['next_chapter_id'] : null;
     }
 
+    public static function getTreasure($chapterId) {
+        $db = Database::getConnection();
+        $query = "SELECT ct.item_id, ct.quantity, i.name 
+                  FROM Chapter_Treasure ct 
+                  JOIN Items i ON ct.item_id = i.id 
+                  WHERE ct.chapter_id = :cid";
+        $stmt = $db->prepare($query);
+        $stmt->execute([':cid' => $chapterId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function hasCollectedTreasure($heroId, $chapterId)
+    {
+        $db = Database::getConnection();
+        $query = "SELECT status FROM Hero_Progress 
+                WHERE hero_id = :hero_id AND chapter_id = :chapter_id";
+        $stmt = $db->prepare($query);
+        $stmt->execute([':hero_id' => $heroId, ':chapter_id' => $chapterId]);
+        $result = $stmt->fetchColumn();
+        
+        return ($result === 'collected'); 
+    }
+
+    public static function processTreasureCollection($heroId, $chapterId) {
+        $db = Database::getConnection();
+        $treasure = self::getTreasure($chapterId);
+    
+        if ($treasure) {
+            try {
+                $db->beginTransaction();
+
+                $stmtInv = $db->prepare("INSERT INTO Inventory (hero_id, item_id, quantity) VALUES (?, ?, ?)");
+                $stmtInv->execute([$heroId, $treasure['item_id'], $treasure['quantity']]);
+
+                $stmtUpd = $db->prepare("UPDATE Hero_Progress SET status = 'collected' WHERE hero_id = ? AND chapter_id = ?");
+                $stmtUpd->execute([$heroId, $chapterId]);
+    
+                return $db->commit();
+            } catch (Exception $e) {
+                $db->rollBack();
+                return false;
+            }
+        }
+        return false;
+    }
+
     public function getId()
     {
         return $this->id;
