@@ -245,53 +245,75 @@ function enableButtons() {
 
 function openInventoryModal() {
     const modal = document.getElementById('inventory-modal');
-    modal.style.display = 'flex';
-    loadInventory();
-}
-
-function closeInventoryModal() {
-    const modal = document.getElementById('inventory-modal');
-    modal.style.display = 'none';
-}
-
-function loadInventory() {
     const contentList = document.getElementById('inventory-content-list');
+    
+    modal.style.display = 'block';
     contentList.innerHTML = '<p style="text-align: center; color: #aaa;">Chargement...</p>';
-
+    
     fetch('/combat/inventory')
-        .then(response => {
-             if (!response.ok) {
-                 throw new Error(`Erreur HTTP: ${response.status}`);
-             }
-             return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            if (data.success && data.inventory.length > 0) {
-                contentList.innerHTML = '';
-                data.inventory.forEach(item => {
-                    const itemElement = document.createElement('div');
-                    itemElement.className = 'inventory-item';
-                    itemElement.innerHTML = `
-                        <img src="${item.image || '/public/img/Potions.jpg'}" alt="${item.name}" class="item-icon">
-                        <div class="item-info">
-                            <strong>${item.name}</strong>
-                            <span>(${item.item_type}) x${item.quantity}</span>
-                            <p class="item-description">${item.description}</p>
-                        </div>
-                        <button class="use-item-btn" data-item-id="${item.item_id}" ${item.item_type !== 'consumable' ? 'disabled' : ''}>Utiliser</button>
-                    `;
-                    contentList.appendChild(itemElement);
-                });
+            if (data.success && data.inventory) {
+                // Charger le contenu depuis showItems.php
+                fetch('/views/game/showItems.php')
+                    .then(response => response.text())
+                    .then(html => {
+                        contentList.innerHTML = html;
+                    })
+                    .catch(err => {
+                        contentList.innerHTML = '<p style="color: red;">Erreur de chargement</p>';
+                    });
             } else {
-                contentList.innerHTML = '<p style="text-align: center; color: #ffc107;">Votre inventaire est vide.</p>';
+                contentList.innerHTML = '<p style="color: red;">Erreur: ' + (data.error || 'Inconnu') + '</p>';
             }
         })
-        .catch(error => {
-            console.error('Erreur de chargement inventaire:', error);
-            contentList.innerHTML = '<p style="text-align: center; color: #ef4444;">Erreur de connexion aux données.</p>';
+        .catch(err => {
+            contentList.innerHTML = '<p style="color: red;">Erreur réseau</p>';
         });
 }
 
+function closeInventoryModal() {
+    document.getElementById('inventory-modal').style.display = 'none';
+}
+
+function useItem(itemId, action) {
+    closeInventoryModal();
+    
+    const formData = new FormData();
+    formData.append('action', 'use_item');
+    formData.append('item_id', itemId);
+    formData.append('item_action', action);
+    
+    fetch('/combat/action', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayCombatLog(data.actions);
+            
+            if (data.combat_ended) {
+                setTimeout(() => {
+                    window.location.href = '/combat/end';
+                }, 2000);
+            }
+        } else {
+            alert(data.error || 'Erreur lors de l\'utilisation de l\'item');
+        }
+    })
+    .catch(err => {
+        console.error('Erreur:', err);
+        alert('Erreur réseau');
+    });
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('inventory-modal');
+    if (event.target == modal) {
+        closeInventoryModal();
+    }
+}
 document.addEventListener('DOMContentLoaded', function() {
     const logContent = document.querySelector('.log-content');
     if (logContent) {
