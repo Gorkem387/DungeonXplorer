@@ -75,16 +75,15 @@ class Inventory
              return []; 
         }
         
-        // CORRECTION : Sélectionne uniquement les colonnes confirmées par l'utilisateur
         $query = "SELECT 
-                    i.id as item_id, 
-                    i.name, 
-                    inv.quantity, 
-                    i.description, 
-                    i.item_type -- Colonne confirmée
-                  FROM Inventory inv
-                  INNER JOIN Items i ON inv.item_id = i.id
-                  WHERE inv.hero_id = :hero_id AND inv.quantity > 0";
+                i.id as item_id, 
+                i.name, 
+                i.description, 
+                i.image,
+                inv.quantity
+              FROM Inventory inv
+              INNER JOIN Items i ON inv.item_id = i.id
+              WHERE inv.hero_id = :hero_id AND inv.quantity > 0";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':hero_id', $heroId, PDO::PARAM_INT);
         $stmt->execute();

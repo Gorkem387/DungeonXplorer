@@ -5,6 +5,9 @@ class CombatController
     public function start($id = null)
     {
         session_start();
+        if ($id !== null) {
+            $_SESSION['current_hero_id'] = $id;
+        }
         
         if (isset($_POST['chapter_id'])) {
             $_SESSION['chapter_after_combat'] = $_POST['chapter_id'];

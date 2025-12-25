@@ -253,23 +253,41 @@ function openInventoryModal() {
     fetch('/combat/inventory')
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.inventory) {
-                // Charger le contenu depuis showItems.php
-                fetch('/views/game/showItems.php')
-                    .then(response => response.text())
-                    .then(html => {
-                        contentList.innerHTML = html;
-                    })
-                    .catch(err => {
-                        contentList.innerHTML = '<p style="color: red;">Erreur de chargement</p>';
-                    });
+            if (data.success) {
+                renderInventory(data.inventory, contentList);
             } else {
-                contentList.innerHTML = '<p style="color: red;">Erreur: ' + (data.error || 'Inconnu') + '</p>';
+                contentList.innerHTML = `<p style="color: red;">${data.error}</p>`;
             }
-        })
-        .catch(err => {
-            contentList.innerHTML = '<p style="color: red;">Erreur réseau</p>';
         });
+}
+
+function renderInventory(items, container) {
+    if (items.length === 0) {
+        container.innerHTML = '<p style="text-align: center; padding: 20px;">Votre sac est vide.</p>';
+        return;
+    }
+
+    let html = '<div class="inventory-list">';
+    items.forEach(item => {
+        const imagePath = item.image ? `/public/img/Items/${item.image}` : '/public/img/Items/Casque.jpg';
+        const name = item.name || `Objet #${item.item_id}`;
+        const desc = item.description || "Aucune description disponible.";
+
+        html += `
+            <div class="inventory-item">
+                <img src="${imagePath}" class="item-icon" alt="${name}">
+                <div class="item-info">
+                    <strong>${name} (x${item.quantity})</strong>
+                    <p class="item-description">${desc}</p>
+                </div>
+                <button class="use-item-btn" onclick="useItem(${item.item_id}, 'use')">
+                    Utiliser
+                </button>
+            </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
 }
 
 function closeInventoryModal() {
