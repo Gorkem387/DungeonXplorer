@@ -1,3 +1,0 @@
-INSERT INTO `Class` (`name`, `description`, `image`, `base_pv`, `base_mana`, `strength`, `initiative`, `max_items`) VALUES ('Magicien', 'Agile et furtif, maître des attaques surprises. Initiative élevée et esquive naturelle.', 'mage.png', '75', '120', '6', '10', '8');
-
-pour auto inserer magicien c un exemple.
